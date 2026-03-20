@@ -16,11 +16,6 @@
         
         .korean-font { font-family: 'Noto Sans KR', sans-serif; }
         
-        /* 藍色漸變背景 */
-        .blue-gradient-bg {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-        }
-
         /* 玻璃擬態卡片 */
         .glass-card {
             background: rgba(255, 255, 255, 1);
@@ -30,7 +25,7 @@
         
         .glass-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
             border-color: #3b82f6;
         }
 
@@ -42,23 +37,26 @@
             opacity: 0.8;
         }
 
-        /* 底部 Banner 設計 */
-        .bottom-banner-design {
+        /* 底部設計區域：融合 Banner.png 與藍色漸變 */
+        .bottom-banner-wrapper {
             position: relative;
-            background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
             border-radius: 3rem;
             overflow: hidden;
             color: white;
+            /* 縮小一點點顯示範圍 */
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        .bottom-banner-design::before {
-            content: "";
+        .bottom-banner-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('Banner.png');
             background-size: cover;
             background-position: center;
-            opacity: 0.25; /* 圖片融合於藍色背景 */
+            opacity: 0.2; /* 保持圖片細節但降低透明度與藍色融合 */
             z-index: 0;
             pointer-events: none;
         }
@@ -81,14 +79,14 @@
         </div>
     </nav>
 
-    <!-- 頂部標題區 -->
-    <header class="py-20 px-4 text-center bg-white border-b border-slate-100">
+    <!-- 頂部標題區 (調整背景顏色為淺藍) -->
+    <header class="py-24 px-4 text-center bg-blue-50/50 border-b border-blue-100">
         <div class="max-w-4xl mx-auto">
-            <div class="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest text-blue-600 uppercase bg-blue-50 rounded-full">
+            <div class="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest text-blue-700 uppercase bg-blue-100/80 rounded-full">
                 Interactive Learning Platform
             </div>
             <h1 class="text-4xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">Baewooja專屬韓語學習</h1>
-            <p class="text-lg md:text-2xl text-slate-600 font-medium max-w-2xl mx-auto">系統化學習韓語，從零基礎開始掌握</p>
+            <p class="text-lg md:text-2xl text-blue-800/80 font-medium max-w-2xl mx-auto">系統化學習韓語，從零基礎開始掌握</p>
         </div>
     </header>
 
@@ -105,7 +103,7 @@
                     <span class="bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm">已上線</span>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-900 mb-1">發音攻略</h2>
-                <p class="text-sm font-bold text-blue-500/60 korean-font mb-4 uppercase tracking-widest">발음 (Pronunciation)</p>
+                <p class="text-sm font-bold text-blue-500/60 korean-font mb-4 uppercase tracking-widest">발音 (Pronunciation)</p>
                 <p class="text-slate-600 leading-relaxed mb-6">掌握 40音、收音及發音規則，內建真人語音與模擬器。</p>
                 <div class="flex items-center text-blue-600 font-bold text-sm">
                     立即開始學習 <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
@@ -224,7 +222,7 @@
                 <h2 class="text-2xl font-bold text-slate-900 mb-1">查詢課程及付費詳情</h2>
                 <p class="text-sm font-bold text-emerald-600/60 korean-font mb-4 uppercase tracking-widest">수업 및 결제 문의</p>
                 <p class="text-slate-600 mb-6 italic">
-                    想解鎖所有模組功能或參加 1 對 1 課程？點擊聯絡我們。
+                    想解鎖所有功能或參加真人課程？點擊聯絡我們。
                 </p>
                 <span class="text-blue-600 font-black text-sm flex items-center group-hover:underline">
                     立即 WhatsApp 諮詢 <i class="fas fa-arrow-right ml-2"></i>
@@ -233,24 +231,25 @@
 
         </div>
 
-        <!-- 底部設計 Banner (融合藍色漸變) -->
-        <div class="mt-32 bottom-banner-design p-12 md:p-24 shadow-2xl">
+        <!-- 底部設計 Banner (優化解像度與尺寸) -->
+        <div class="mt-32 bottom-banner-wrapper p-10 md:p-20 shadow-2xl">
+            <div class="bottom-banner-bg"></div>
             <div class="relative-content text-center">
                 <h3 class="text-3xl md:text-5xl font-black mb-8 leading-tight">跟著 Baewooja<br>開啟你的韓語新世界</h3>
-                <p class="text-blue-50/80 text-lg md:text-xl max-w-3xl mx-auto mb-12 leading-relaxed">
+                <p class="text-blue-50/90 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed font-medium">
                     我們提供的不只是課程，而是一套完整的學習系統。從零基礎發音到深度文化解析，專業團隊全程陪伴。
                 </p>
                 <div class="flex flex-wrap justify-center gap-6">
-                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20">
-                        <i class="fas fa-check-circle text-blue-300"></i>
-                        <span class="font-bold">專業導師團隊</span>
+                    <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20">
+                        <i class="fas fa-check-circle text-blue-200"></i>
+                        <span class="font-bold">專業導師</span>
                     </div>
-                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20">
-                        <i class="fas fa-check-circle text-blue-300"></i>
+                    <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20">
+                        <i class="fas fa-check-circle text-blue-200"></i>
                         <span class="font-bold">系統化教材</span>
                     </div>
-                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20">
-                        <i class="fas fa-check-circle text-blue-300"></i>
+                    <div class="flex items-center gap-2 bg-white/20 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20">
+                        <i class="fas fa-check-circle text-blue-200"></i>
                         <span class="font-bold">互動式體驗</span>
                     </div>
                 </div>
@@ -262,7 +261,7 @@
     <footer class="mt-auto py-12 text-center text-slate-400 text-xs border-t border-slate-100">
         <p class="font-bold text-slate-600 mb-2">@Baewooja_Korlearners</p>
         <p class="mb-1">Email: korlearners@gmail.com | WhatsApp: +852 6306 4331</p>
-        <p>© 2024 Baewooja. All rights reserved.</p>
+        <p>© 2026 Baewooja. All rights reserved.</p>
     </footer>
 
 </body>
