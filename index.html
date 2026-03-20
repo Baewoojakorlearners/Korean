@@ -8,13 +8,19 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
-        body { font-family: 'Noto Sans TC', 'Noto Sans KR', sans-serif; }
+        body { font-family: 'Noto Sans TC', 'Noto Sans KR', sans-serif; background-color: #ffffff; }
         .korean-font { font-family: 'Noto Sans KR', sans-serif; }
         
-        .bg-banner {
-            position: fixed;
+        /* 標題區域背景：設置 Banner.png 透明度 50% */
+        .hero-banner {
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-banner::before {
+            content: "";
+            position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
+            z-index: 0;
             background-image: url('Banner.png');
             background-size: cover;
             background-position: center;
@@ -23,24 +29,22 @@
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
             transition: all 0.3s ease;
         }
         
         .locked-card {
-            background: rgba(241, 245, 249, 0.6);
-            backdrop-filter: blur(4px);
+            background: rgba(248, 250, 252, 0.8);
             cursor: not-allowed;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col relative">
+<body class="min-h-screen flex flex-col relative bg-white">
 
-    <div class="bg-banner"></div>
-
-    <nav class="bg-white/60 backdrop-blur-md sticky top-0 z-50 border-b border-white/40 p-4 shadow-sm">
+    <!-- 導航欄 (IG Link) -->
+    <nav class="bg-white sticky top-0 z-50 border-b border-slate-100 p-4 shadow-sm">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <a href="https://www.instagram.com/Baewooja_Korlearners/" target="_blank" class="font-bold text-xl tracking-wider flex items-center gap-2 text-slate-800 hover:text-pink-600 transition">
                 <i class="fab fa-instagram text-pink-500"></i>
@@ -49,17 +53,20 @@
         </div>
     </nav>
 
-    <header class="py-12 px-4 text-center">
-        <div class="max-w-4xl mx-auto glass-card rounded-3xl p-8">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-2">Baewooja專屬韓語學習</h1>
-            <p class="text-slate-600">系統化學習韓語，從零基礎開始掌握</p>
+    <!-- 標題區：僅在此處維持 Banner 背景 -->
+    <header class="hero-banner py-20 px-4 text-center border-b border-slate-50">
+        <div class="max-w-4xl mx-auto relative z-10 bg-white/60 backdrop-blur-md rounded-3xl p-10 border border-white/50 shadow-sm">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-slate-900 mb-4">Baewooja專屬韓語學習</h1>
+            <p class="text-lg md:text-xl text-slate-700 font-medium">系統化學習韓語，從零基礎開始掌握</p>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-6 pb-20">
+    <!-- 下方模組區：背景維持空白 (白色) -->
+    <main class="max-w-6xl mx-auto px-6 py-16">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-            <a href="pronunciation.html" class="glass-card rounded-2xl p-6 shadow-md hover:-translate-y-1 group">
+            <!-- 1. 發音 (已上線) -->
+            <a href="pronunciation.html" class="glass-card rounded-2xl p-6 shadow-sm hover:shadow-md hover:-translate-y-1 group">
                 <div class="flex justify-between items-start mb-4">
                     <div class="w-12 h-12 bg-indigo-500 text-white rounded-lg flex items-center justify-center text-xl shadow-lg">
                         <i class="fas fa-volume-up"></i>
@@ -72,9 +79,10 @@
                 <span class="text-indigo-600 text-xs font-bold">立即開始 <i class="fas fa-arrow-right ml-1"></i></span>
             </a>
 
-            <div class="glass-card locked-card rounded-2xl p-6 border border-slate-200 opacity-80 flex flex-col">
+            <!-- 2. 單字 -->
+            <div class="locked-card rounded-2xl p-6 border border-slate-100 flex flex-col">
                 <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 bg-slate-400 text-white rounded-lg flex items-center justify-center text-xl">
+                    <div class="w-12 h-12 bg-slate-300 text-white rounded-lg flex items-center justify-center text-xl">
                         <i class="fas fa-book"></i>
                     </div>
                     <span class="bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
@@ -84,9 +92,10 @@
                 <p class="text-slate-500 text-sm">初級至中級必備常用單字，搭配互動練習。</p>
             </div>
 
-            <div class="glass-card locked-card rounded-2xl p-6 border border-slate-200 opacity-80">
+            <!-- 3. 文法 -->
+            <div class="locked-card rounded-2xl p-6 border border-slate-100">
                 <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 bg-slate-400 text-white rounded-lg flex items-center justify-center text-xl">
+                    <div class="w-12 h-12 bg-slate-300 text-white rounded-lg flex items-center justify-center text-xl">
                         <i class="fas fa-pen-nib"></i>
                     </div>
                     <span class="bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
@@ -96,21 +105,23 @@
                 <p class="text-slate-500 text-sm">淺顯易懂的語法拆解，教你如何組句子。</p>
             </div>
 
-            <div class="glass-card locked-card rounded-2xl p-6 border border-slate-200 opacity-80">
+            <!-- 4. 對話 -->
+            <div class="locked-card rounded-2xl p-6 border border-slate-100">
                 <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 bg-slate-400 text-white rounded-lg flex items-center justify-center text-xl">
+                    <div class="w-12 h-12 bg-slate-300 text-white rounded-lg flex items-center justify-center text-xl">
                         <i class="fas fa-comments"></i>
                     </div>
                     <span class="bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
                 </div>
                 <h2 class="text-xl font-bold mb-1">情境對話</h2>
-                <p class="text-xs font-bold text-slate-400 korean-font mb-3">대화 (Conversation)</p>
+                <p class="text-xs font-bold text-slate-400 korean-font mb-3">대話 (Conversation)</p>
                 <p class="text-slate-500 text-sm">生活化場景對話，掌握地道韓語表達。</p>
             </div>
 
-            <div class="glass-card locked-card rounded-2xl p-6 border border-slate-200 opacity-80">
+            <!-- 5. 閱讀 -->
+            <div class="locked-card rounded-2xl p-6 border border-slate-100">
                 <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 bg-slate-400 text-white rounded-lg flex items-center justify-center text-xl">
+                    <div class="w-12 h-12 bg-slate-300 text-white rounded-lg flex items-center justify-center text-xl">
                         <i class="fas fa-book-open"></i>
                     </div>
                     <span class="bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
@@ -120,9 +131,10 @@
                 <p class="text-slate-500 text-sm">短文與新聞閱讀，提升韓文理解能力。</p>
             </div>
 
-            <div class="glass-card locked-card rounded-2xl p-6 border border-slate-200 opacity-80">
+            <!-- 6. 寫作 -->
+            <div class="locked-card rounded-2xl p-6 border border-slate-100">
                 <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 bg-slate-400 text-white rounded-lg flex items-center justify-center text-xl">
+                    <div class="w-12 h-12 bg-slate-300 text-white rounded-lg flex items-center justify-center text-xl">
                         <i class="fas fa-edit"></i>
                     </div>
                     <span class="bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
@@ -132,9 +144,10 @@
                 <p class="text-slate-500 text-sm">引導式造句與短文寫作練習。</p>
             </div>
 
-            <div class="glass-card locked-card rounded-2xl p-6 border border-slate-200 opacity-80">
+            <!-- 7. 聽力 -->
+            <div class="locked-card rounded-2xl p-6 border border-slate-100">
                 <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 bg-slate-400 text-white rounded-lg flex items-center justify-center text-xl">
+                    <div class="w-12 h-12 bg-slate-300 text-white rounded-lg flex items-center justify-center text-xl">
                         <i class="fas fa-headphones"></i>
                     </div>
                     <span class="bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
@@ -144,9 +157,10 @@
                 <p class="text-slate-500 text-sm">各類速度聽力素材，磨練你的韓文耳朵。</p>
             </div>
 
-            <div class="glass-card locked-card rounded-2xl p-6 border border-slate-200 opacity-80">
+            <!-- 8. 口說 -->
+            <div class="locked-card rounded-2xl p-6 border border-slate-100">
                 <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 bg-slate-400 text-white rounded-lg flex items-center justify-center text-xl">
+                    <div class="w-12 h-12 bg-slate-300 text-white rounded-lg flex items-center justify-center text-xl">
                         <i class="fas fa-bullhorn"></i>
                     </div>
                     <span class="bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
@@ -156,9 +170,10 @@
                 <p class="text-slate-500 text-sm">練習發音矯正，提升口說流利度。</p>
             </div>
 
-            <div class="glass-card locked-card rounded-2xl p-6 border border-slate-200 opacity-80">
+            <!-- 9. 口語拆解 -->
+            <div class="locked-card rounded-2xl p-6 border border-slate-100">
                 <div class="flex justify-between items-start mb-4">
-                    <div class="w-12 h-12 bg-slate-400 text-white rounded-lg flex items-center justify-center text-xl">
+                    <div class="w-12 h-12 bg-slate-300 text-white rounded-lg flex items-center justify-center text-xl">
                         <i class="fas fa-puzzle-piece"></i>
                     </div>
                     <span class="bg-slate-200 text-slate-500 text-[10px] font-bold px-2 py-1 rounded"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
@@ -168,7 +183,8 @@
                 <p class="text-slate-500 text-sm">深度解析流行語與生活口語結構。</p>
             </div>
 
-            <a href="https://wa.me/85263064331?text=你好，我想查詢韓語課程及付費詳情" target="_blank" class="glass-card rounded-2xl p-6 border-2 border-emerald-500/50 shadow-lg hover:-translate-y-1 group bg-emerald-50/30">
+            <!-- 最終項目: WhatsApp 諮詢 -->
+            <a href="https://wa.me/85263064331?text=你好，我想查詢韓語課程及付費詳情" target="_blank" class="bg-white rounded-2xl p-6 border-2 border-emerald-500/50 shadow-sm hover:shadow-md hover:-translate-y-1 group">
                 <div class="w-12 h-12 bg-emerald-500 text-white rounded-lg flex items-center justify-center text-2xl mb-4 shadow-lg">
                     <i class="fab fa-whatsapp"></i>
                 </div>
@@ -183,7 +199,7 @@
         </div>
     </main>
 
-    <footer class="mt-auto py-8 text-center glass-card border-t border-white/40 text-slate-500 text-xs">
+    <footer class="mt-auto py-10 text-center bg-slate-50 border-t border-slate-100 text-slate-500 text-xs">
         <p class="font-bold text-slate-800 mb-1">@Baewooja_Korlearners</p>
         <p>korlearners@gmail.com | WhatsApp: +852 6306 4331</p>
     </footer>
