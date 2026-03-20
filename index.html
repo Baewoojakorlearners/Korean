@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baewooja 韓語學習中心 | 專屬互動學習站</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+        body { font-family: 'Noto Sans TC', 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
+        .korean-font { font-family: 'Noto Sans KR', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-slate-800">
+
+    <!-- Header -->
+    <nav class="bg-slate-900 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <span class="font-bold text-xl tracking-wider flex items-center gap-2">
+                <i class="fas fa-graduation-cap text-indigo-400"></i>
+                Baewooja_Korlearners
+            </span>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-indigo-600 text-white py-20 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-6 tracking-tight">歡迎來到韓語專屬學習中心</h1>
+            <p class="text-xl text-indigo-100 mb-8 max-w-2xl mx-auto">
+                從零開始掌握韓文！這裡集結了各式互動學習工具，點擊下方模組開始你的學習旅程。
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content: Module Grid -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 py-12 -mt-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Module 1: 發音攻略 (Active) -->
+            <!-- 注意：這裡的 href 設為 pronunciation.html，請記得把你原本的發音網頁改名為這個！ -->
+            <a href="pronunciation.html" class="bg-white rounded-2xl p-6 shadow-lg border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition duration-300 group block relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg z-10">已上線</div>
+                <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition">
+                    <i class="fas fa-volume-up"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2 text-slate-800 group-hover:text-indigo-600 transition">發音完全攻略</h2>
+                <h3 class="text-sm font-bold korean-font text-slate-400 mb-3">발음 (Pronunciation)</h3>
+                <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                    掌握 10個基本母音、14個基本子音與特殊收音規則。內建「字體組合模擬器」與「真人發音」功能。
+                </p>
+                <div class="text-indigo-600 font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                    進入課程 <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <!-- Module 2: 單字庫 (Coming Soon) -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 relative opacity-75 cursor-not-allowed">
+                <div class="absolute top-0 right-0 bg-slate-300 text-slate-600 text-xs font-bold px-3 py-1 rounded-bl-lg z-10">建置中</div>
+                <div class="w-14 h-14 bg-slate-100 text-slate-400 rounded-xl flex items-center justify-center text-2xl mb-4">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2 text-slate-700">基礎單字庫</h2>
+                <h3 class="text-sm font-bold korean-font text-slate-400 mb-3">단어 (Vocabulary)</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">
+                    精選初學者必備的生活常用單字。即將推出互動式閃卡與單字測驗功能，敬請期待。
+                </p>
+            </div>
+
+            <!-- Module 3: 實用文法 (Coming Soon) -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 relative opacity-75 cursor-not-allowed">
+                <div class="absolute top-0 right-0 bg-slate-300 text-slate-600 text-xs font-bold px-3 py-1 rounded-bl-lg z-10">規劃中</div>
+                <div class="w-14 h-14 bg-slate-100 text-slate-400 rounded-xl flex items-center justify-center text-2xl mb-4">
+                    <i class="fas fa-pencil-ruler"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2 text-slate-700">實用文法</h2>
+                <h3 class="text-sm font-bold korean-font text-slate-400 mb-3">문법 (Grammar)</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">
+                    從敬語、半語到基本句型結構的快速入門。幫助你順利組織韓文句子。
+                </p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="mt-auto py-8 text-center bg-slate-900 text-slate-400 text-sm">
+        <p class="font-bold text-white mb-2">@Baewooja_Korlearners</p>
+        <p>版權所有 | 專為韓語初學者設計的互動學習站</p>
+    </footer>
+
+</body>
+</html>
