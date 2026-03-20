@@ -3,534 +3,385 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>發音攻略 | Baewooja 韓語學習中心</title>
+    <title>韓語拼音初級教室 | @Baewooja_Korlearners</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
-        
-        body { 
-            font-family: 'Noto Sans TC', 'Noto Sans KR', sans-serif; 
-            background-color: #f8fafc; 
-        }
-        
+        body { font-family: 'Noto Sans TC', 'Noto Sans KR', sans-serif; background-color: #f8fafc; scroll-behavior: smooth; }
         .korean-font { font-family: 'Noto Sans KR', sans-serif; }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        .letter-card {
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .letter-card:hover {
-            transform: translateY(-2px);
-            background-color: #eff6ff;
-            border-color: #3b82f6;
-        }
-
-        .quiz-option {
-            transition: all 0.2s;
-            border: 2px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .quiz-option:hover {
-            border-color: #3b82f6;
-            background-color: #f0f7ff;
-        }
-        .quiz-option.correct {
-            border-color: #22c55e;
-            background-color: #f0fdf4;
-        }
-        .quiz-option.wrong {
-            border-color: #ef4444;
-            background-color: #fef2f2;
-        }
-
-        .speaker-icon {
-            color: #94a3b8;
-            transition: color 0.2s;
-        }
-        .letter-card:hover .speaker-icon, .speaker-btn:hover .speaker-icon {
-            color: #3b82f6;
-        }
+        .quiz-option:hover { background-color: #eef2ff; border-color: #6366f1; }
+        .correct { background-color: #d1fae5 !important; border-color: #10b981 !important; color: #065f46; }
+        .incorrect { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b; }
+        .section-card { background: white; border-radius: 1.5rem; padding: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0; }
         
         /* 構造圖解樣式 */
-        .struct-box {
-            @apply flex items-center justify-center border-2 border-dashed rounded-lg p-2 font-bold;
-        }
-        .struct-c { @apply border-blue-400 text-blue-600 bg-blue-50; }
+        .struct-box { @apply flex items-center justify-center border-2 border-dashed rounded-lg p-2 font-bold transition-all; }
+        .struct-c { @apply border-indigo-400 text-indigo-600 bg-indigo-50; }
         .struct-v { @apply border-amber-400 text-amber-600 bg-amber-50; }
         .struct-b { @apply border-emerald-400 text-emerald-600 bg-emerald-50; }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading { animation: spin 1s linear infinite; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="pb-12 text-slate-800">
 
-    <!-- 頂部導航 -->
-    <nav class="bg-white border-b border-slate-200 p-4 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-6xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="text-blue-600 hover:text-blue-800 transition flex items-center gap-2 font-medium">
-                    <i class="fas fa-arrow-left"></i> 返回首頁
-                </a>
-                <div class="h-6 w-px bg-slate-200"></div>
-                <h1 class="font-bold text-lg text-slate-800">發音攻略 <span class="text-blue-500 ml-2">발음</span></h1>
+    <!-- Header -->
+    <nav class="bg-indigo-700 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <span class="font-bold text-lg tracking-wider"><i class="fas fa-graduation-cap mr-2"></i>Baewooja_Korlearners</span>
+            <div class="hidden md:flex space-x-6 text-sm font-medium">
+                <a href="#vowels" class="hover:text-indigo-200 transition">母音</a>
+                <a href="#consonants" class="hover:text-indigo-200 transition">子音</a>
+                <a href="#structure" class="hover:text-indigo-200 transition">韓字構造</a>
+                <a href="#simulator" class="hover:text-indigo-200 transition">拼讀器</a>
+                <a href="#quiz-section" class="bg-white text-indigo-700 px-4 py-1 rounded-full hover:bg-indigo-50 transition">實力測驗</a>
             </div>
-            <div class="hidden md:block text-slate-400 text-sm italic">點擊字母或 <i class="fas fa-volume-up"></i> 聽取真人發音</div>
         </div>
     </nav>
 
-    <!-- 頁面主要內容 -->
-    <main class="max-w-5xl mx-auto px-4 py-8 w-full flex-grow">
-        
-        <!-- 分類切換 -->
-        <div class="flex flex-wrap gap-2 mb-8 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200">
-            <button onclick="showTab('vowels')" id="btn-vowels" class="tab-btn active flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all bg-blue-600 text-white">1. 母音</button>
-            <button onclick="showTab('consonants')" id="btn-consonants" class="tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all text-slate-600 hover:bg-slate-50">2. 子音</button>
-            <button onclick="showTab('batchim')" id="btn-batchim" class="tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all text-slate-600 hover:bg-slate-50">3. 收音規則</button>
-            <button onclick="showTab('structure')" id="btn-structure" class="tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all text-slate-600 hover:bg-slate-50">4. 韓字構造</button>
-            <button onclick="showTab('builder-section')" id="btn-builder-section" class="tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all text-slate-600 hover:bg-slate-50">5. 拼讀練習</button>
-            <button onclick="showTab('quiz-section')" id="btn-quiz-section" class="tab-btn flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all text-slate-600 hover:bg-slate-50">6. 發音測驗</button>
+    <!-- Hero -->
+    <header class="bg-gradient-to-b from-indigo-50 to-white py-16 px-4 border-b">
+        <div class="max-w-3xl mx-auto text-center">
+            <h1 class="text-4xl font-extrabold text-slate-900 mb-4 tracking-tight">韓文發音 ( 발음 ) 完全攻略</h1>
+            <p class="text-lg text-slate-600 mb-8">結合 Baewooja 專業教學邏輯，從字母到單字構造的一站式學習。</p>
         </div>
+    </header>
 
-        <!-- 1. 母音區塊 -->
-        <section id="vowels" class="tab-content active space-y-10">
-            <div>
-                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <span class="w-2 h-6 bg-blue-600 rounded-full"></span> 基礎母音 (10個)
-                </h2>
-                <div class="grid grid-cols-2 sm:grid-cols-5 gap-4" id="vowel-grid"></div>
+    <main class="max-w-5xl mx-auto px-4 mt-10 space-y-12">
+        
+        <!-- 1. 母音區 -->
+        <section id="vowels" class="section-card">
+            <h2 class="text-2xl font-bold mb-6 text-indigo-800 flex items-center border-b pb-2">
+                <i class="fas fa-font mr-3"></i> 1. 母音 ( 모음 )
+            </h2>
+            
+            <h3 class="font-bold text-slate-700 mb-3"> ▶ 10個基本母音</h3>
+            <div class="grid grid-cols-5 md:grid-cols-10 gap-2 mb-6" id="basic-vowel-container"></div>
+            
+            <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-8 rounded-r-lg">
+                <h4 class="font-bold text-amber-800 mb-2"><i class="fas fa-lightbulb mr-1"></i> 筆記重點：陰陽聲</h4>
+                <p class="text-sm text-amber-900 mb-1"><strong>陽聲：</strong> ㅏ, ㅑ, ㅗ, ㅛ (感覺明亮、輕快)</p>
+                <p class="text-sm text-amber-900"><strong>陰聲：</strong> ㅓ, ㅕ, ㅜ, ㅠ (感覺沉重、深沉)</p>
             </div>
         </section>
 
-        <!-- 2. 子音區塊 -->
-        <section id="consonants" class="tab-content space-y-12">
-            <div>
-                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <span class="w-2 h-6 bg-blue-600 rounded-full"></span> 基礎子音 (14個)
-                </h2>
-                <div class="grid grid-cols-3 sm:grid-cols-7 gap-3" id="consonant-grid"></div>
+        <!-- 2. 子音區 -->
+        <section id="consonants" class="section-card">
+            <h2 class="text-2xl font-bold mb-6 text-indigo-800 flex items-center border-b pb-2">
+                <i class="fas fa-language mr-3"></i> 2. 14個基本子音 ( 자음 )
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 text-sm">
+                            <th class="p-3 border-b">子音</th>
+                            <th class="p-3 border-b">拼音</th>
+                            <th class="p-3 border-b korean-font">字母名稱</th>
+                            <th class="p-3 border-b text-center">聽聲音</th>
+                        </tr>
+                    </thead>
+                    <tbody id="consonant-table-body" class="text-sm"></tbody>
+                </table>
             </div>
         </section>
 
-        <!-- 3. 收音與雙收音 -->
-        <section id="batchim" class="tab-content space-y-12">
-            <div>
-                <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <span class="w-2 h-6 bg-indigo-600 rounded-full"></span> 七大代表收音 (받침)
-                </h2>
-                <p class="text-slate-500 mb-6 text-sm">點擊單字旁的小喇叭聽取示範音：</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 flex flex-col gap-3">
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 font-black text-indigo-600 text-xl border-r pr-4 text-center">[ k ]</div>
-                            <div class="korean-font text-2xl font-bold">ㄱ, ㅋ, ㄲ</div>
-                        </div>
-                        <p class="text-xs text-slate-400">解釋：舌後根抬起抵住軟顎，不吐氣。</p>
-                        <div class="flex items-center gap-4 text-sm bg-slate-50 p-3 rounded-lg">
-                            <span class="font-bold text-indigo-500 shrink-0">例子：</span>
-                            <button class="flex items-center gap-2 hover:text-blue-600 transition" onclick="speak('국')">
-                                <span class="korean-font">국 (湯)</span> <i class="fas fa-volume-up speaker-icon"></i>
-                            </button>
-                            <button class="flex items-center gap-2 hover:text-blue-600 transition" onclick="speak('밖')">
-                                <span class="korean-font">밖 (外面)</span> <i class="fas fa-volume-up speaker-icon"></i>
-                            </button>
+        <!-- 3. 韓字構造 (新加入項目) -->
+        <section id="structure" class="section-card bg-slate-50 border-slate-200">
+            <h2 class="text-2xl font-bold mb-6 text-indigo-800 flex items-center border-b border-slate-200 pb-2">
+                <i class="fas fa-th-large mr-3"></i> 3. 韓文字構造與位法
+            </h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- 左右 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-4"><i class="fas fa-columns text-indigo-500 mr-2"></i>左右結構</h3>
+                    <p class="text-xs text-slate-500 mb-4">當母音為垂直型時 (如 ㅏ, ㅓ, ㅣ)</p>
+                    <div class="flex justify-center mb-6">
+                        <div class="grid grid-cols-2 gap-2 w-32 h-32">
+                            <div class="struct-box struct-c text-2xl korean-font">ㄱ</div>
+                            <div class="struct-box struct-v text-2xl korean-font">ㅏ</div>
                         </div>
                     </div>
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 flex flex-col gap-3">
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 font-black text-indigo-600 text-xl border-r pr-4 text-center">[ n ]</div>
-                            <div class="korean-font text-2xl font-bold">ㄴ</div>
-                        </div>
-                        <p class="text-xs text-slate-400">解釋：舌尖頂住上齒齦，氣流從鼻腔出。</p>
-                        <div class="flex items-center gap-4 text-sm bg-slate-50 p-3 rounded-lg">
-                            <span class="font-bold text-indigo-500 shrink-0">例子：</span>
-                            <button class="flex items-center gap-2 hover:text-blue-600 transition" onclick="speak('눈')">
-                                <span class="korean-font">눈 (眼睛)</span> <i class="fas fa-volume-up speaker-icon"></i>
-                            </button>
-                            <button class="flex items-center gap-2 hover:text-blue-600 transition" onclick="speak('산')">
-                                <span class="korean-font">산 (山)</span> <i class="fas fa-volume-up speaker-icon"></i>
-                            </button>
-                        </div>
+                    <div class="text-center">
+                        <button class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-xl border border-indigo-100 font-bold korean-font hover:bg-indigo-100 transition" onclick="speakKorean('가')">
+                            가 (ga) <i class="fas fa-volume-up ml-1 opacity-50"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- 4. 韓字構造說明 (NEW) -->
-        <section id="structure" class="tab-content space-y-8">
-            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <span class="w-2 h-6 bg-emerald-500 rounded-full"></span> 韓文字構造與位法
-                </h2>
-                <p class="text-slate-600 mb-8">韓文是「方塊字」，由子音、母音及收音組合而成。其排列方式取決於**母音的形狀**。</p>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- 左右結構 -->
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-columns text-blue-500"></i> 1. 左右結構
-                        </h3>
-                        <p class="text-xs text-slate-500 mb-4">當母音為**垂直長條** (如 ㅏ, ㅓ, ㅣ) 時：</p>
-                        <div class="flex justify-center mb-6">
-                            <div class="grid grid-cols-2 gap-2 w-32 h-32">
-                                <div class="struct-box struct-c">子</div>
-                                <div class="struct-box struct-v">母</div>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <button class="bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm hover:border-blue-400 transition" onclick="speak('가')">
-                                <span class="korean-font text-2xl font-bold">가</span> (ㄱ + ㅏ) <i class="fas fa-volume-up speaker-icon ml-1"></i>
-                            </button>
+                <!-- 上下 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-4"><i class="fas fa-equals text-amber-500 mr-2"></i>上下結構</h3>
+                    <p class="text-xs text-slate-500 mb-4">當母音為水平型時 (如 ㅗ, ㅜ, ㅡ)</p>
+                    <div class="flex justify-center mb-6">
+                        <div class="grid grid-rows-2 gap-2 w-32 h-32">
+                            <div class="struct-box struct-c text-2xl korean-font">ㄱ</div>
+                            <div class="struct-box struct-v text-2xl korean-font">ㅗ</div>
                         </div>
                     </div>
-
-                    <!-- 上下結構 -->
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-equals text-amber-500"></i> 2. 上下結構
-                        </h3>
-                        <p class="text-xs text-slate-500 mb-4">當母音為**水平長條** (如 ㅗ, ㅜ, ㅡ) 時：</p>
-                        <div class="flex justify-center mb-6">
-                            <div class="grid grid-rows-2 gap-2 w-32 h-32">
-                                <div class="struct-box struct-c">子音</div>
-                                <div class="struct-box struct-v">母音</div>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <button class="bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm hover:border-amber-400 transition" onclick="speak('고')">
-                                <span class="korean-font text-2xl font-bold">고</span> (ㄱ + ㅗ) <i class="fas fa-volume-up speaker-icon ml-1"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 收音位法 -->
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <i class="fas fa-level-down-alt text-emerald-500"></i> 3. 加入收音 (尾音)
-                        </h3>
-                        <p class="text-xs text-slate-500 mb-4">不論上述何種結構，收音永遠在**最下方**：</p>
-                        <div class="flex justify-center mb-6">
-                            <div class="flex flex-col gap-2 w-32 h-32">
-                                <div class="flex gap-2 flex-1">
-                                    <div class="struct-box struct-c flex-1 text-xs">子</div>
-                                    <div class="struct-box struct-v flex-1 text-xs">母</div>
-                                </div>
-                                <div class="struct-box struct-b h-12">收音 (尾音)</div>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <button class="bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm hover:border-emerald-400 transition" onclick="speak('강')">
-                                <span class="korean-font text-2xl font-bold">강</span> (ㄱ+ㅏ+ㅇ) <i class="fas fa-volume-up speaker-icon ml-1"></i>
-                            </button>
-                        </div>
+                    <div class="text-center">
+                        <button class="bg-amber-50 text-amber-700 px-4 py-2 rounded-xl border border-amber-100 font-bold korean-font hover:bg-amber-100 transition" onclick="speakKorean('고')">
+                            고 (go) <i class="fas fa-volume-up ml-1 opacity-50"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- 5. 拼讀練習器 -->
-        <section id="builder-section" class="tab-content">
-            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                <div class="flex items-center gap-3 mb-8">
-                    <div class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center">
-                        <i class="fas fa-cubes"></i>
-                    </div>
-                    <h2 class="text-xl font-bold text-slate-800">拼讀練習器</h2>
-                </div>
-                
-                <div class="flex flex-col md:flex-row gap-10 items-center">
-                    <div class="flex-1 space-y-6 w-full">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">選擇子音</label>
-                            <div class="grid grid-cols-5 gap-2" id="builder-cho-btns"></div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">選擇母音</label>
-                            <div class="grid grid-cols-5 gap-2" id="builder-jung-btns"></div>
+                <!-- 尾音 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-slate-800 mb-4"><i class="fas fa-level-down-alt text-emerald-500 mr-2"></i>收音位法</h3>
+                    <p class="text-xs text-slate-500 mb-4">收音 (尾音) 永遠固定在最下方</p>
+                    <div class="flex justify-center mb-6">
+                        <div class="flex flex-col gap-2 w-32 h-32">
+                            <div class="flex gap-2 flex-1">
+                                <div class="struct-box struct-c flex-1 text-xl korean-font">ㄱ</div>
+                                <div class="struct-box struct-v flex-1 text-xl korean-font">ㅏ</div>
+                            </div>
+                            <div class="struct-box struct-b h-12 text-xl korean-font">ㄴ</div>
                         </div>
                     </div>
-
-                    <div class="bg-slate-50 p-12 rounded-[2rem] flex flex-col items-center justify-center min-w-[280px] border border-slate-100 shadow-inner group relative">
-                        <div id="builder-result" class="korean-font text-9xl font-black text-blue-600 mb-4 transition-transform group-hover:scale-105">가</div>
-                        <div id="builder-pinyin" class="text-slate-400 font-medium text-lg mb-6 uppercase tracking-widest">ga</div>
-                        <button onclick="speakCurrentSyllable()" class="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-700 transition active:scale-95">
-                            <i class="fas fa-volume-up text-2xl"></i>
+                    <div class="text-center">
+                        <button class="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl border border-emerald-100 font-bold korean-font hover:bg-emerald-100 transition" onclick="speakKorean('간')">
+                            간 (gan) <i class="fas fa-volume-up ml-1 opacity-50"></i>
                         </button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 6. Quiz 區塊 -->
-        <section id="quiz-section" class="tab-content space-y-8">
-            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
-                <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-xl font-bold text-slate-800">發音基礎挑戰</h2>
-                    <div id="quiz-progress" class="bg-blue-50 text-blue-600 px-4 py-1 rounded-full font-bold text-sm">1 / 10</div>
-                </div>
-
-                <div id="quiz-container">
-                    <div class="flex items-center justify-center flex-col gap-6 py-8 bg-slate-50 rounded-2xl mb-8 border border-slate-100">
-                        <div id="quiz-question" class="text-xl font-bold text-slate-700 text-center px-4">載入中...</div>
-                        <button id="quiz-audio-btn" class="w-20 h-20 bg-white rounded-full shadow-md flex items-center justify-center text-blue-500 hover:text-blue-700 hover:shadow-lg transition">
-                            <i class="fas fa-volume-up text-3xl"></i>
-                        </button>
+        <!-- 4. 拼讀模擬器 (支援尾音) -->
+        <section id="simulator" class="section-card">
+            <h2 class="text-2xl font-bold mb-2 text-indigo-800 text-center">拼讀模擬器 Pro</h2>
+            <p class="text-center text-slate-500 text-sm mb-10">選擇聲母、韻母與收音，構建完整的韓文字。</p>
+            
+            <div class="flex flex-col lg:flex-row items-center justify-center gap-10">
+                <!-- 選擇區 -->
+                <div class="grid grid-cols-1 gap-6 w-full max-w-sm">
+                    <div>
+                        <label class="text-[10px] text-indigo-400 block mb-2 font-black uppercase tracking-widest">聲母 (初聲)</label>
+                        <select id="sim-con" onchange="updateSimulator()" class="w-full p-3 rounded-xl border-2 border-indigo-100 text-lg font-bold korean-font focus:border-indigo-500 outline-none transition">
+                            <!-- JS 動態填入 -->
+                        </select>
                     </div>
-                    <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                    <div>
+                        <label class="text-[10px] text-amber-400 block mb-2 font-black uppercase tracking-widest">韻母 (中聲)</label>
+                        <select id="sim-vow" onchange="updateSimulator()" class="w-full p-3 rounded-xl border-2 border-amber-100 text-lg font-bold korean-font focus:border-amber-500 outline-none transition">
+                            <!-- JS 動態填入 -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-emerald-400 block mb-2 font-black uppercase tracking-widest">收音 (終聲)</label>
+                        <select id="sim-batchim" onchange="updateSimulator()" class="w-full p-3 rounded-xl border-2 border-emerald-100 text-lg font-bold korean-font focus:border-emerald-500 outline-none transition">
+                            <option value="">(無收音)</option>
+                            <!-- JS 動態填入 -->
+                        </select>
+                    </div>
                 </div>
 
-                <div id="quiz-result" class="hidden text-center space-y-6 py-10">
-                    <div class="text-6xl mb-4">🏆</div>
-                    <h3 class="text-2xl font-bold text-slate-800">測驗結束！</h3>
-                    <p id="score-text" class="text-slate-500 text-lg">你的得分是 0 / 10</p>
-                    <button onclick="restartQuiz()" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg">再試一次</button>
+                <!-- 結果顯示 -->
+                <div onclick="speakResult()" class="bg-indigo-600 w-56 h-56 rounded-[3rem] flex flex-col items-center justify-center shadow-2xl transform hover:scale-105 transition duration-300 cursor-pointer relative group">
+                    <i class="fas fa-volume-up absolute top-6 right-6 text-indigo-300 group-hover:text-white transition"></i>
+                    <div id="res-char" class="text-8xl font-bold text-white korean-font">아</div>
+                    <div id="res-rom" class="text-indigo-200 mt-4 font-mono tracking-widest text-xl uppercase">a</div>
+                    <div class="mt-2 text-[10px] text-indigo-300 font-bold opacity-0 group-hover:opacity-100 transition">點擊發音</div>
                 </div>
+            </div>
+        </section>
+
+        <!-- 5. 實力測驗 -->
+        <section id="quiz-section" class="section-card p-0 overflow-hidden">
+            <div class="bg-slate-800 text-white p-6 flex justify-between items-center">
+                <h2 class="text-xl font-bold"><i class="fas fa-pen-nib mr-2"></i> 發音總複習</h2>
+                <span id="score-display" class="bg-indigo-500 px-4 py-1.5 rounded-full text-sm font-bold">分數: 0 / 10</span>
+            </div>
+            <div id="quiz-container" class="p-8 space-y-10 bg-white"></div>
+            <div id="final-result" class="hidden p-10 text-center bg-indigo-50 border-t border-indigo-100">
+                <h3 class="text-3xl font-extrabold text-indigo-900 mb-3">測驗結束！</h3>
+                <p id="final-score-text" class="text-xl text-indigo-700 mb-8 font-bold"></p>
+                <button onclick="location.reload()" class="bg-indigo-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-indigo-700 shadow-lg transition transform hover:-translate-y-1">
+                    重新挑戰
+                </button>
             </div>
         </section>
 
     </main>
 
-    <footer class="py-10 bg-white text-center border-t border-slate-200">
-        <p class="text-slate-400 text-xs">© Baewooja_Korlearners 韓語學習中心 | 專業發音系統</p>
+    <footer class="mt-20 py-8 text-center bg-slate-800 text-slate-400 text-sm">
+        <p class="font-bold text-white mb-2">@Baewooja_Korlearners</p>
+        <p>版權所有，依據韓語發音筆記製作 | 專為韓語初學者設計的拼讀練習站</p>
     </footer>
 
     <script>
-        const apiKey = ""; 
+        // 資料定義
+        const initialConsonants = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+        const medialVowels = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
+        const finalConsonants = ['', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+        
+        const initialRomaja = ['g', 'kk', 'n', 'd', 'tt', 'r', 'm', 'b', 'pp', 's', 'ss', '', 'j', 'jj', 'ch', 'k', 't', 'p', 'h'];
+        const medialRomaja = ['a', 'ae', 'ya', 'yae', 'eo', 'e', 'yeo', 'ye', 'o', 'wa', 'wae', 'oe', 'yo', 'u', 'wo', 'we', 'wi', 'yu', 'eu', 'ui', 'i'];
+        const finalRomaja = ['', 'k', 'k', 'k', 'n', 'n', 'n', 't', 'l', 'k', 'm', 'l', 'l', 'l', 'p', 'l', 'm', 'p', 'p', 't', 't', 'ng', 't', 'ch', 'k', 't', 'p', 't'];
 
-        const vowels = [
-            {char: 'ㅏ', rom: 'a'}, {char: 'ㅑ', rom: 'ya'}, {char: 'ㅓ', rom: 'eo'}, {char: 'ㅕ', rom: 'yeo'}, {char: 'ㅗ', rom: 'o'},
-            {char: 'ㅛ', rom: 'yo'}, {char: 'ㅜ', rom: 'u'}, {char: 'ㅠ', rom: 'yu'}, {char: 'ㅡ', rom: 'eu'}, {char: 'ㅣ', rom: 'i'}
+        const basicVowels = [
+            {k: 'ㅏ', r: 'a'}, {k: 'ㅑ', r: 'ya'}, {k: 'ㅓ', r: 'eo'}, {k: 'ㅕ', r: 'yeo'}, {k: 'ㅗ', r: 'o'},
+            {k: 'ㅛ', r: 'yo'}, {k: 'ㅜ', r: 'u'}, {k: 'ㅠ', r: 'yu'}, {k: 'ㅡ', r: 'eu'}, {k: 'ㅣ', r: 'i'}
         ];
-        const consonants = [
-            {char: 'ㄱ', rom: 'g/k'}, {char: 'ㄴ', rom: 'n'}, {char: 'ㄷ', rom: 'd/t'}, {char: 'ㄹ', rom: 'r/l'}, {char: 'ㅁ', rom: 'm'},
-            {char: 'ㅂ', rom: 'b/p'}, {char: 'ㅅ', rom: 's'}, {char: 'ㅇ', rom: '-'}, {char: 'ㅈ', rom: 'j'}, {char: 'ㅊ', rom: 'ch'},
-            {char: 'ㅋ', rom: 'k'}, {char: 'ㅌ', rom: 't'}, {char: 'ㅍ', rom: 'p'}, {char: 'ㅎ', rom: 'h'}
+
+        const consData = [
+            {c: 'ㄱ', r: 'g/k', n: '기역'}, {c: 'ㄴ', r: 'n', n: '니은'}, {c: 'ㄷ', r: 'd/t', n: '디귿'}, {c: 'ㄹ', r: 'r/l', n: '리을'},
+            {c: 'ㅁ', r: 'm', n: '미음'}, {c: 'ㅂ', r: 'b/p', n: '비읍'}, {c: 'ㅅ', r: 's/t', n: '시옷'}, {c: 'ㅇ', r: 'ng', n: '이응'},
+            {c: 'ㅈ', r: 'j/t', n: '지읒'}, {c: 'ㅊ', r: 'ch/t', n: '치읓'}, {c: 'ㅋ', r: 'k', n: '키읔'}, {c: 'ㅌ', r: 't', n: '티읕'},
+            {c: 'ㅍ', r: 'p', n: '피읖'}, {c: 'ㅎ', r: 'h', n: '히읗'}
         ];
 
-        async function speak(text) {
-            if (!text) return;
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Say clearly in Korean: ${text}` }] }],
-                        generationConfig: {
-                            responseModalities: ["AUDIO"],
-                            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } }
-                        }
-                    })
-                });
-                const result = await response.json();
-                const audioData = result.candidates[0].content.parts[0].inlineData.data;
-                playAudio(audioData);
-            } catch (err) { console.error("Audio error:", err); }
+        // 語音播放 (採用上傳範本中的 Web Speech API)
+        function speakKorean(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ko-KR';
+                utterance.rate = 0.8;
+                window.speechSynthesis.speak(utterance);
+            }
         }
 
-        function playAudio(base64Data) {
-            const binaryString = atob(base64Data);
-            const len = binaryString.length;
-            const bytes = new Uint8Array(len);
-            for (let i = 0; i < len; i++) bytes[i] = binaryString.charCodeAt(i);
-            const wavHeader = createWavHeader(bytes.length, 24000);
-            const blob = new Blob([wavHeader, bytes], { type: 'audio/wav' });
-            const url = URL.createObjectURL(blob);
-            const audio = new Audio(url);
-            audio.play();
+        function speakResult() {
+            const char = document.getElementById('res-char').innerText;
+            speakKorean(char);
         }
 
-        function createWavHeader(dataLength, sampleRate) {
-            const buffer = new ArrayBuffer(44);
-            const view = new DataView(buffer);
-            const writeString = (offset, string) => {
-                for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
-            };
-            writeString(0, 'RIFF');
-            view.setUint32(4, 36 + dataLength, true);
-            writeString(8, 'WAVE');
-            writeString(12, 'fmt ');
-            view.setUint32(16, 16, true);
-            view.setUint16(20, 1, true);
-            view.setUint16(22, 1, true);
-            view.setUint32(24, sampleRate, true);
-            view.setUint32(28, sampleRate * 2, true);
-            view.setUint16(32, 2, true);
-            view.setUint16(34, 16, true);
-            writeString(36, 'data');
-            view.setUint32(40, dataLength, true);
-            return buffer;
-        }
+        // 初始化界面
+        function initUI() {
+            // 基本母音
+            const vContainer = document.getElementById('basic-vowel-container');
+            vContainer.innerHTML = basicVowels.map(v => `
+                <div onclick="speakKorean('${v.k}')" class="bg-slate-50 p-2 rounded-lg text-center border hover:border-indigo-400 transition cursor-pointer relative group">
+                    <i class="fas fa-volume-up absolute top-1 right-1 text-slate-300 group-hover:text-indigo-500 text-[8px]"></i>
+                    <div class="text-2xl font-bold korean-font text-indigo-600">${v.k}</div>
+                    <div class="text-[10px] text-slate-500 font-mono mt-1">${v.r}</div>
+                </div>
+            `).join('');
 
-        function renderGrids() {
-            const vGrid = document.getElementById('vowel-grid');
-            vowels.forEach(v => {
-                const card = document.createElement('div');
-                card.className = 'letter-card bg-white border border-slate-200 p-6 rounded-2xl text-center group';
-                card.onclick = () => speak(v.char);
-                card.innerHTML = `
-                    <div class="korean-font text-4xl font-bold text-blue-900 mb-2 flex items-center justify-center gap-2">
-                        ${v.char} <i class="fas fa-volume-up text-sm speaker-icon"></i>
-                    </div>
-                    <div class="text-slate-400 text-sm uppercase">${v.rom}</div>
-                `;
-                if(vGrid) vGrid.appendChild(card);
+            // 子音表格
+            const tBody = document.getElementById('consonant-table-body');
+            tBody.innerHTML = consData.map((d, i) => `
+                <tr class="${i%2===0 ? 'bg-white' : 'bg-slate-50'} hover:bg-indigo-50 transition">
+                    <td class="p-3 border-b font-bold korean-font text-indigo-600 text-lg">${d.c}</td>
+                    <td class="p-3 border-b font-mono text-slate-500">${d.r}</td>
+                    <td class="p-3 border-b korean-font text-slate-700">${d.n}</td>
+                    <td class="p-3 border-b text-center">
+                        <button onclick="speakKorean('${d.n}')" class="text-slate-300 hover:text-indigo-600 transition p-2"><i class="fas fa-volume-up"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // 模擬器下拉單
+            const conSelect = document.getElementById('sim-con');
+            const vowSelect = document.getElementById('sim-vow');
+            const batchimSelect = document.getElementById('sim-batchim');
+
+            initialConsonants.forEach((c, idx) => {
+                const opt = new Option(`${c} (${initialRomaja[idx] || '不發音'})`, c);
+                if (c === 'ㅇ') opt.selected = true;
+                conSelect.add(opt);
             });
 
-            const cGrid = document.getElementById('consonant-grid');
-            consonants.forEach(c => {
-                const card = document.createElement('div');
-                card.className = 'letter-card bg-white border border-slate-200 p-4 rounded-xl text-center group';
-                card.onclick = () => speak(c.char);
-                card.innerHTML = `
-                    <div class="korean-font text-3xl font-bold text-blue-900 mb-1 flex items-center justify-center gap-1">
-                        ${c.char} <i class="fas fa-volume-up text-xs speaker-icon"></i>
-                    </div>
-                    <div class="text-slate-400 text-[10px] uppercase">${c.rom}</div>
-                `;
-                if(cGrid) cGrid.appendChild(card);
+            medialVowels.forEach((v, idx) => {
+                const opt = new Option(`${v} (${medialRomaja[idx]})`, v);
+                vowSelect.add(opt);
             });
 
-            const choContainer = document.getElementById('builder-cho-btns');
-            const jungContainer = document.getElementById('builder-jung-btns');
-            const chos = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅎ'];
-            const jungs = ['ㅏ', 'ㅑ', 'ㅓ', 'ㅕ', 'ㅗ', 'ㅛ', 'ㅜ', 'ㅠ', 'ㅡ', 'ㅣ'];
-            
-            if(choContainer) chos.forEach((c, i) => {
-                const btn = document.createElement('button');
-                btn.className = `cho-btn p-2 rounded-lg border border-slate-200 hover:bg-blue-50 korean-font font-bold text-lg ${i===0?'bg-blue-600 text-white':''}`;
-                btn.innerText = c;
-                btn.onclick = () => {
-                    document.querySelectorAll('.cho-btn').forEach(b => b.classList.remove('bg-blue-600', 'text-white'));
-                    btn.classList.add('bg-blue-600', 'text-white');
-                    updateBuilder();
-                };
-                choContainer.appendChild(btn);
-            });
-
-            if(jungContainer) jungs.forEach((j, i) => {
-                const btn = document.createElement('button');
-                btn.className = `jung-btn p-2 rounded-lg border border-slate-200 hover:bg-blue-50 korean-font font-bold text-lg ${i===0?'bg-blue-600 text-white':''}`;
-                btn.innerText = j;
-                btn.onclick = () => {
-                    document.querySelectorAll('.jung-btn').forEach(b => b.classList.remove('bg-blue-600', 'text-white'));
-                    btn.classList.add('bg-blue-600', 'text-white');
-                    updateBuilder();
-                };
-                jungContainer.appendChild(btn);
+            finalConsonants.forEach((f, idx) => {
+                if(f === '') return;
+                const opt = new Option(`${f} (${finalRomaja[idx]})`, f);
+                batchimSelect.add(opt);
             });
         }
 
-        function updateBuilder() {
-            const activeCho = document.querySelector('.cho-btn.bg-blue-600')?.innerText || 'ㄱ';
-            const activeJung = document.querySelector('.jung-btn.bg-blue-600')?.innerText || 'ㅏ';
-            const chosIdx = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
-            const jungsIdx = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
-            const choIndex = chosIdx.indexOf(activeCho);
-            const jungIndex = jungsIdx.indexOf(activeJung);
-            const charCode = 0xAC00 + (choIndex * 21 * 28) + (jungIndex * 28);
-            const resultElem = document.getElementById('builder-result');
-            if(resultElem) resultElem.innerText = String.fromCharCode(charCode);
-            const pMap = {'ㄱ':'g','ㄴ':'n','ㄷ':'d','ㄹ':'r','ㅁ':'m','ㅂ':'b','ㅅ':'s','ㅇ':'','ㅈ':'j','ㅎ':'h','ㅏ':'a','ㅑ':'ya','ㅓ':'eo','ㅕ':'yeo','ㅗ':'o','ㅛ':'yo','ㅜ':'u','ㅠ':'yu','ㅡ':'eu','ㅣ':'i'};
-            const pinyinElem = document.getElementById('builder-pinyin');
-            if(pinyinElem) pinyinElem.innerText = (pMap[activeCho] || '') + (pMap[activeJung] || '');
+        // 模擬器核心邏輯
+        function updateSimulator() {
+            const conChar = document.getElementById('sim-con').value;
+            const vowChar = document.getElementById('sim-vow').value;
+            const batchimChar = document.getElementById('sim-batchim').value;
+
+            const i = initialConsonants.indexOf(conChar);
+            const m = medialVowels.indexOf(vowChar);
+            const t = finalConsonants.indexOf(batchimChar);
+
+            // 韓文 Unicode 公式: (聲母索引 * 588) + (韻母索引 * 28) + (收音索引) + 44032
+            const charCode = 44032 + (i * 588) + (m * 28) + t;
+            document.getElementById('res-char').innerText = String.fromCharCode(charCode);
+
+            // 羅馬拼音組合
+            const romInitial = initialRomaja[i];
+            const romMedial = medialRomaja[m];
+            const romFinal = finalRomaja[t];
+            document.getElementById('res-rom').innerText = (romInitial + romMedial + romFinal) || '...';
         }
 
-        function speakCurrentSyllable() {
-            const word = document.getElementById('builder-result')?.innerText;
-            if(word) speak(word);
-        }
-
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-600', 'text-white');
-                btn.classList.add('text-slate-600', 'hover:bg-slate-50');
-            });
-            document.getElementById('btn-' + tabId).classList.add('bg-blue-600', 'text-white');
-        }
-
+        // Quiz 邏輯
         const quizData = [
-            { q: "請問這個字的發音是什麼？", word: "가", a: ["ga", "na", "da", "ma"], correct: 0 },
-            { q: "請問「牛奶」的韓文發音？", word: "우유", a: ["u-yu", "o-yo", "a-i", "eu-i"], correct: 0 },
-            { q: "聽到這個音，請選出正確字母：", word: "ㄹ", a: ["n", "m", "r/l", "s"], correct: 2 },
-            { q: "收音「ㄱ」發音時，舌頭位置在哪？", word: "국", a: ["頂住上齒齦", "抵住軟顎(不吐氣)", "閉上雙唇", "放鬆"], correct: 1 },
-            { q: "聽到這個音，請選出正確子音：", word: "ㅂ", a: ["g", "n", "d", "b/p"], correct: 3 },
-            { q: "「한국어」的正確連音發音是？", word: "한구거", a: ["han-guk-eo", "han-gu-geo", "han-guk-go", "han-gu-eo"], correct: 1 },
-            { q: "請問這個字的發音是什麼？", word: "어", a: ["o", "eo", "a", "u"], correct: 1 },
-            { q: "「바보」的意思是笨蛋，讀音是？", word: "바보", a: ["pa-pu", "da-do", "ba-bo", "ma-mo"], correct: 2 },
-            { q: "聽到這個音，請選出正確字母：", word: "ㅎ", a: ["h", "k", "t", "p"], correct: 0 },
-            { q: "「비」的意思是雨，它的拼音是？", word: "비", a: ["bi", "si", "gi", "ni"], correct: 0 }
+            { q: "韓文字中，當母音是水平形狀（如 ㅗ, ㅜ, ㅡ）時，子音應放在哪裡？", options: ["左邊", "上面", "下面"], correct: 1 },
+            { q: "「收音」在韓文方塊字中的位置固定在哪裡？", options: ["最左方", "中間", "最下方"], correct: 2 },
+            { q: "單字「간」的組成順序是？", options: ["ㄱ+ㅏ+ㄴ", "ㄴ+ㅏ+ㄱ", "ㅏ+ㄱ+ㄴ"], correct: 0 },
+            { q: "子音「 ㄱ 」的韓文名稱是什麼？", options: [" 니은 ", " 기역 ", " 디귿 "], correct: 1 },
+            { q: "下列哪一組是陽聲母音？", options: ["ㅓ, ㅜ", "ㅏ, ㅗ", "ㅡ, ㅣ"], correct: 1 },
+            { q: "母音「 ㅡ 」的羅馬拼音是？", options: ["u", "eu", "eo"], correct: 1 },
+            { q: "子音「 ㅇ 」在字首時的發音是？", options: ["發 ng 音", "不發音", "發 h 音"], correct: 1 },
+            { q: "韓文字「고」屬於哪種構造？", options: ["左右結構", "上下結構", "三層結構"], correct: 1 },
+            { q: "子音「 ㅅ 」作為收音時發什麼音？", options: ["s 音", "t 音", "p 音"], correct: 1 },
+            { q: "「 ㅘ 」這個複合母音是由哪兩個母音組成的？", options: ["ㅗ + ㅏ", "ㅜ + ㅓ", "ㅡ + ㅣ"], correct: 0 }
         ];
 
-        let currentQ = 0, score = 0;
+        let currentScore = 0;
+        let answeredCount = 0;
 
-        function loadQuiz() {
-            if(!quizData[currentQ]) return;
-            const data = quizData[currentQ];
-            const prog = document.getElementById('quiz-progress');
-            if(prog) prog.innerText = `${currentQ + 1} / ${quizData.length}`;
-            const quest = document.getElementById('quiz-question');
-            if(quest) quest.innerText = data.q;
-            const abtn = document.getElementById('quiz-audio-btn');
-            if(abtn) abtn.onclick = () => speak(data.word);
-            const optionsDiv = document.getElementById('quiz-options');
-            if(optionsDiv) {
-                optionsDiv.innerHTML = '';
-                data.a.forEach((opt, idx) => {
-                    const btn = document.createElement('button');
-                    btn.className = 'quiz-option w-full p-5 rounded-2xl text-left font-bold text-slate-700 bg-white shadow-sm';
-                    btn.innerHTML = `<span>${opt}</span> <i class="fas fa-volume-up speaker-icon opacity-0"></i>`;
-                    btn.onclick = () => checkQuiz(idx, btn);
-                    optionsDiv.appendChild(btn);
-                });
-            }
-            speak(data.word);
+        function initQuiz() {
+            const container = document.getElementById('quiz-container');
+            quizData.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = `quiz-item ${index > 0 ? 'border-t border-slate-100 pt-8' : ''}`;
+                div.innerHTML = `
+                    <p class="font-bold text-lg mb-5 text-slate-700"><span class="text-indigo-500 mr-2">Q${index+1}.</span> ${item.q}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        ${item.options.map((opt, optIndex) => `
+                            <button onclick="checkAnswer(this, ${index}, ${optIndex})" class="quiz-option border border-slate-200 bg-slate-50 p-4 rounded-xl text-left font-medium text-slate-700 transition">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
         }
 
-        function checkQuiz(idx, btn) {
-            const correct = quizData[currentQ].correct;
-            const options = document.querySelectorAll('.quiz-option');
-            options.forEach(b => b.onclick = null);
-            if (idx === correct) {
+        function checkAnswer(btn, qIndex, optIndex) {
+            const parent = btn.parentElement;
+            const buttons = parent.querySelectorAll('button');
+            const correctIndex = quizData[qIndex].correct;
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.classList.remove('quiz-option', 'bg-slate-50');
+            });
+            if (optIndex === correctIndex) {
                 btn.classList.add('correct');
-                score++;
+                currentScore++;
+                btn.innerHTML += ` <i class="fas fa-check-circle ml-2"></i>`;
             } else {
-                btn.classList.add('wrong');
-                options[correct].classList.add('correct');
+                btn.classList.add('incorrect');
+                btn.innerHTML += ` <i class="fas fa-times-circle ml-2"></i>`;
+                buttons[correctIndex].classList.add('correct');
             }
-            setTimeout(() => {
-                currentQ++;
-                if (currentQ < quizData.length) loadQuiz();
-                else showResult();
-            }, 1500);
+            answeredCount++;
+            document.getElementById('score-display').innerText = `分數: ${currentScore} / 10`;
+            if (answeredCount === quizData.length) showFinalResult();
         }
 
-        function showResult() {
-            document.getElementById('quiz-container').classList.add('hidden');
-            document.getElementById('quiz-result').classList.remove('hidden');
-            const scoreText = document.getElementById('score-text');
-            if(scoreText) scoreText.innerText = `你的得分是 ${score} / ${quizData.length}`;
-        }
-
-        function restartQuiz() {
-            currentQ = 0; score = 0;
-            document.getElementById('quiz-container').classList.remove('hidden');
-            document.getElementById('quiz-result').classList.add('hidden');
-            loadQuiz();
+        function showFinalResult() {
+            const finalDiv = document.getElementById('final-result');
+            finalDiv.classList.remove('hidden');
+            document.getElementById('final-score-text').innerHTML = `你的得分是：<span class="text-3xl text-indigo-600">${currentScore}</span> / 10`;
+            finalDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         window.onload = () => {
-            renderGrids();
-            updateBuilder();
-            loadQuiz();
+            initUI();
+            updateSimulator();
+            initQuiz();
         };
     </script>
 </body>
