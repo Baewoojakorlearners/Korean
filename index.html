@@ -16,11 +16,12 @@
         
         .korean-font { font-family: 'Noto Sans KR', sans-serif; }
         
-        /* 玻璃擬態卡片 */
+        /* 玻璃擬態卡片 (解鎖狀態) */
         .glass-card {
             background: rgba(255, 255, 255, 1);
             border: 1px solid rgba(226, 232, 240, 1);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
         }
         
         .glass-card:hover {
@@ -35,6 +36,8 @@
             cursor: not-allowed;
             border: 1px dashed #cbd5e1;
             opacity: 0.8;
+            pointer-events: none; /* 防止點擊 */
+            transition: all 0.3s ease;
         }
 
         /* 底部設計區域：融合 Banner.png 與藍色漸變 */
@@ -44,7 +47,6 @@
             border-radius: 3rem;
             overflow: hidden;
             color: white;
-            /* 縮小一點點顯示範圍 */
             max-width: 1000px;
             margin-left: auto;
             margin-right: auto;
@@ -56,7 +58,7 @@
             background-image: url('Banner.png');
             background-size: cover;
             background-position: center;
-            opacity: 0.2; /* 保持圖片細節但降低透明度與藍色融合 */
+            opacity: 0.2; 
             z-index: 0;
             pointer-events: none;
         }
@@ -64,6 +66,15 @@
         .relative-content {
             position: relative;
             z-index: 10;
+        }
+
+        /* 模態框動畫 */
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
@@ -76,10 +87,16 @@
                 <i class="fab fa-instagram text-blue-600"></i>
                 Baewooja_Korlearners
             </a>
+            
+            <!-- 登入按鈕 -->
+            <button id="authBtn" class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-2 px-4 rounded-full transition-colors border border-blue-200 shadow-sm text-sm">
+                <i class="fas fa-user-circle"></i>
+                <span id="authBtnText">學員登入</span>
+            </button>
         </div>
     </nav>
 
-    <!-- 頂部標題區 (調整背景顏色為淺藍) -->
+    <!-- 頂部標題區 -->
     <header class="py-24 px-4 text-center bg-blue-50/50 border-b border-blue-100">
         <div class="max-w-4xl mx-auto">
             <div class="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-widest text-blue-700 uppercase bg-blue-100/80 rounded-full">
@@ -92,131 +109,155 @@
 
     <!-- 模組區 -->
     <main class="max-w-6xl mx-auto px-6 py-20">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="moduleContainer">
             
-            <!-- 1. 發音 (已上線) -->
-            <a href="pronunciation.html" class="glass-card rounded-3xl p-8 group">
+            <!-- 1. 發音 (永久免費/已上線) -->
+            <a href="pronunciation.html" class="glass-card rounded-3xl p-8 block group">
                 <div class="flex justify-between items-start mb-6">
                     <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-blue-200">
                         <i class="fas fa-volume-up"></i>
                     </div>
-                    <span class="bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm">已上線</span>
+                    <span class="bg-emerald-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm"><i class="fas fa-check-circle mr-1"></i>免費體驗</span>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-900 mb-1">發音攻略</h2>
-                <p class="text-sm font-bold text-blue-500/60 korean-font mb-4 uppercase tracking-widest">발音 (Pronunciation)</p>
+                <p class="text-sm font-bold text-blue-500/60 korean-font mb-4 uppercase tracking-widest">발음 (Pronunciation)</p>
                 <p class="text-slate-600 leading-relaxed mb-6">掌握 40音、收音及發音規則，內建真人語音與模擬器。</p>
-                <div class="flex items-center text-blue-600 font-bold text-sm">
+                <div class="flex items-center text-blue-600 font-bold text-sm mt-auto">
                     立即開始學習 <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                 </div>
             </a>
 
-            <!-- 2. 單字 (付費) -->
-            <div class="locked-card rounded-3xl p-8">
-                <div class="flex justify-between items-start mb-6 text-slate-400">
-                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl">
+            <!-- 2. 單字 (付費/可解鎖) -->
+            <a data-href="vocabulary.html" class="paid-module locked-card rounded-3xl p-8 block group">
+                <div class="flex justify-between items-start mb-6 text-slate-400 icon-wrapper">
+                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl module-icon transition-colors">
                         <i class="fas fa-book"></i>
                     </div>
-                    <span class="bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
+                    <span class="status-badge bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full transition-colors"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-700 mb-1">核心單字</h2>
-                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest">단어 (Vocabulary)</p>
-                <p class="text-slate-500 leading-relaxed">初級至中級必備常用單字，搭配科學化記憶練習。</p>
-            </div>
+                <h2 class="text-2xl font-bold text-slate-700 mb-1 title-text transition-colors">核心單字</h2>
+                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest subtitle-text transition-colors">단어 (Vocabulary)</p>
+                <p class="text-slate-500 leading-relaxed desc-text transition-colors">初級至中級必備常用單字，搭配科學化記憶練習。</p>
+                <div class="action-btn hidden flex items-center text-blue-600 font-bold text-sm mt-6">
+                    立即開始學習 <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
 
-            <!-- 3. 文法 (付費) -->
-            <div class="locked-card rounded-3xl p-8">
-                <div class="flex justify-between items-start mb-6 text-slate-400">
-                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl">
+            <!-- 3. 文法 (付費/可解鎖) -->
+            <a data-href="grammar.html" class="paid-module locked-card rounded-3xl p-8 block group">
+                <div class="flex justify-between items-start mb-6 text-slate-400 icon-wrapper">
+                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl module-icon transition-colors">
                         <i class="fas fa-pen-nib"></i>
                     </div>
-                    <span class="bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
+                    <span class="status-badge bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full transition-colors"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-700 mb-1">實用語法</h2>
-                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest">문법 (Grammar)</p>
-                <p class="text-slate-500 leading-relaxed">淺顯易懂的語法拆解，教你如何像母語者般思考。</p>
-            </div>
+                <h2 class="text-2xl font-bold text-slate-700 mb-1 title-text transition-colors">實用語法</h2>
+                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest subtitle-text transition-colors">문법 (Grammar)</p>
+                <p class="text-slate-500 leading-relaxed desc-text transition-colors">淺顯易懂的語法拆解，教你如何像母語者般思考。</p>
+                <div class="action-btn hidden flex items-center text-blue-600 font-bold text-sm mt-6">
+                    立即開始學習 <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
 
-            <!-- 4. 對話 (付費) -->
-            <div class="locked-card rounded-3xl p-8">
-                <div class="flex justify-between items-start mb-6 text-slate-400">
-                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl">
+            <!-- 4. 對話 (付費/可解鎖) -->
+            <a data-href="conversation.html" class="paid-module locked-card rounded-3xl p-8 block group">
+                <div class="flex justify-between items-start mb-6 text-slate-400 icon-wrapper">
+                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl module-icon transition-colors">
                         <i class="fas fa-comments"></i>
                     </div>
-                    <span class="bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
+                    <span class="status-badge bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full transition-colors"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-700 mb-1">情境對話</h2>
-                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest">대화 (Conversation)</p>
-                <p class="text-slate-500 leading-relaxed">生活化場景對話，掌握地道韓語表達與語調。</p>
-            </div>
+                <h2 class="text-2xl font-bold text-slate-700 mb-1 title-text transition-colors">情境對話</h2>
+                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest subtitle-text transition-colors">대화 (Conversation)</p>
+                <p class="text-slate-500 leading-relaxed desc-text transition-colors">生活化場景對話，掌握地道韓語表達與語調。</p>
+                <div class="action-btn hidden flex items-center text-blue-600 font-bold text-sm mt-6">
+                    立即開始學習 <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
 
-            <!-- 5. 閱讀 (付費) -->
-            <div class="locked-card rounded-3xl p-8">
-                <div class="flex justify-between items-start mb-6 text-slate-400">
-                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl">
+            <!-- 5. 閱讀 (付費/可解鎖) -->
+            <a data-href="reading.html" class="paid-module locked-card rounded-3xl p-8 block group">
+                <div class="flex justify-between items-start mb-6 text-slate-400 icon-wrapper">
+                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl module-icon transition-colors">
                         <i class="fas fa-book-open"></i>
                     </div>
-                    <span class="bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
+                    <span class="status-badge bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full transition-colors"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-700 mb-1">閱讀理解</h2>
-                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest">읽기 (Reading)</p>
-                <p class="text-slate-500 leading-relaxed">短文與新聞閱讀，循序漸進提升長句分析能力。</p>
-            </div>
+                <h2 class="text-2xl font-bold text-slate-700 mb-1 title-text transition-colors">閱讀理解</h2>
+                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest subtitle-text transition-colors">읽기 (Reading)</p>
+                <p class="text-slate-500 leading-relaxed desc-text transition-colors">短文與新聞閱讀，循序漸進提升長句分析能力。</p>
+                <div class="action-btn hidden flex items-center text-blue-600 font-bold text-sm mt-6">
+                    立即開始學習 <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
 
-            <!-- 6. 寫作 (付費) -->
-            <div class="locked-card rounded-3xl p-8">
-                <div class="flex justify-between items-start mb-6 text-slate-400">
-                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl">
+            <!-- 6. 寫作 (付費/可解鎖) -->
+            <a data-href="writing.html" class="paid-module locked-card rounded-3xl p-8 block group">
+                <div class="flex justify-between items-start mb-6 text-slate-400 icon-wrapper">
+                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl module-icon transition-colors">
                         <i class="fas fa-edit"></i>
                     </div>
-                    <span class="bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
+                    <span class="status-badge bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full transition-colors"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-700 mb-1">寫作練習</h2>
-                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest">쓰기 (Writing)</p>
-                <p class="text-slate-500 leading-relaxed">引導式造句與短文寫作練習，專業老師在線批改。</p>
-            </div>
+                <h2 class="text-2xl font-bold text-slate-700 mb-1 title-text transition-colors">寫作練習</h2>
+                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest subtitle-text transition-colors">쓰기 (Writing)</p>
+                <p class="text-slate-500 leading-relaxed desc-text transition-colors">引導式造句與短文寫作練習，專業老師在線批改。</p>
+                <div class="action-btn hidden flex items-center text-blue-600 font-bold text-sm mt-6">
+                    立即開始學習 <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
 
-            <!-- 7. 聽力 (付費) -->
-            <div class="locked-card rounded-3xl p-8">
-                <div class="flex justify-between items-start mb-6 text-slate-400">
-                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl">
+            <!-- 7. 聽力 (付費/可解鎖) -->
+            <a data-href="listening.html" class="paid-module locked-card rounded-3xl p-8 block group">
+                <div class="flex justify-between items-start mb-6 text-slate-400 icon-wrapper">
+                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl module-icon transition-colors">
                         <i class="fas fa-headphones"></i>
                     </div>
-                    <span class="bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
+                    <span class="status-badge bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full transition-colors"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-700 mb-1">聽力訓練</h2>
-                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest">듣기 (Listening)</p>
-                <p class="text-slate-500 leading-relaxed">各類語速聽力素材，磨練你對連音與變音的靈敏度。</p>
-            </div>
+                <h2 class="text-2xl font-bold text-slate-700 mb-1 title-text transition-colors">聽力訓練</h2>
+                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest subtitle-text transition-colors">듣기 (Listening)</p>
+                <p class="text-slate-500 leading-relaxed desc-text transition-colors">各類語速聽力素材，磨練你對連音與變音的靈敏度。</p>
+                <div class="action-btn hidden flex items-center text-blue-600 font-bold text-sm mt-6">
+                    立即開始學習 <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
 
-            <!-- 8. 口說 (付費) -->
-            <div class="locked-card rounded-3xl p-8">
-                <div class="flex justify-between items-start mb-6 text-slate-400">
-                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl">
+            <!-- 8. 口說 (付費/可解鎖) -->
+            <a data-href="speaking.html" class="paid-module locked-card rounded-3xl p-8 block group">
+                <div class="flex justify-between items-start mb-6 text-slate-400 icon-wrapper">
+                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl module-icon transition-colors">
                         <i class="fas fa-bullhorn"></i>
                     </div>
-                    <span class="bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
+                    <span class="status-badge bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full transition-colors"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-700 mb-1">口說練習</h2>
-                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest">말하기 (Speaking)</p>
-                <p class="text-slate-500 leading-relaxed">AI 發音矯正與影子練習，大幅提升你的口說流利度。</p>
-            </div>
+                <h2 class="text-2xl font-bold text-slate-700 mb-1 title-text transition-colors">口說練習</h2>
+                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest subtitle-text transition-colors">말하기 (Speaking)</p>
+                <p class="text-slate-500 leading-relaxed desc-text transition-colors">AI 發音矯正與影子練習，大幅提升你的口說流利度。</p>
+                <div class="action-btn hidden flex items-center text-blue-600 font-bold text-sm mt-6">
+                    立即開始學習 <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
 
-            <!-- 9. 口語拆解 (付費) -->
-            <div class="locked-card rounded-3xl p-8">
-                <div class="flex justify-between items-start mb-6 text-slate-400">
-                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl">
+            <!-- 9. 口語拆解 (付費/可解鎖) -->
+            <a data-href="analysis.html" class="paid-module locked-card rounded-3xl p-8 block group">
+                <div class="flex justify-between items-start mb-6 text-slate-400 icon-wrapper">
+                    <div class="w-14 h-14 bg-slate-200 rounded-2xl flex items-center justify-center text-2xl module-icon transition-colors">
                         <i class="fas fa-puzzle-piece"></i>
                     </div>
-                    <span class="bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
+                    <span class="status-badge bg-slate-300 text-white text-[10px] font-bold px-3 py-1 rounded-full transition-colors"><i class="fas fa-lock mr-1"></i>付費解鎖</span>
                 </div>
-                <h2 class="text-2xl font-bold text-slate-700 mb-1">口語拆解</h2>
-                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest">구어 분석 (Analysis)</p>
-                <p class="text-slate-500 leading-relaxed">深度解析流行語、縮寫與劇中台詞，掌握最潮用語。</p>
-            </div>
+                <h2 class="text-2xl font-bold text-slate-700 mb-1 title-text transition-colors">口語拆解</h2>
+                <p class="text-sm font-bold text-slate-400 korean-font mb-4 uppercase tracking-widest subtitle-text transition-colors">구어 분석 (Analysis)</p>
+                <p class="text-slate-500 leading-relaxed desc-text transition-colors">深度解析流行語、縮寫與劇中台詞，掌握最潮用語。</p>
+                <div class="action-btn hidden flex items-center text-blue-600 font-bold text-sm mt-6">
+                    立即開始學習 <i class="fas fa-chevron-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
 
             <!-- 最終 WhatsApp 諮詢 -->
-            <a href="https://wa.me/85263064331?text=你好，我想查詢韓語課程及付費詳情" target="_blank" class="bg-white rounded-3xl p-8 border-2 border-blue-600 shadow-xl shadow-blue-100 hover:-translate-y-2 transition-all group">
-                <div class="w-14 h-14 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-3xl mb-6">
+            <a href="https://wa.me/85263064331?text=你好，我想查詢韓語課程及付費詳情" target="_blank" class="bg-white rounded-3xl p-8 border-2 border-blue-600 shadow-xl shadow-blue-100 hover:-translate-y-2 transition-all group block">
+                <div class="w-14 h-14 bg-emerald-500 text-white rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-lg shadow-emerald-200">
                     <i class="fab fa-whatsapp"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-900 mb-1">查詢課程及付費詳情</h2>
@@ -225,13 +266,13 @@
                     想解鎖所有功能或參加真人課程？點擊聯絡我們。
                 </p>
                 <span class="text-blue-600 font-black text-sm flex items-center group-hover:underline">
-                    立即 WhatsApp 諮詢 <i class="fas fa-arrow-right ml-2"></i>
+                    立即 WhatsApp 諮詢 <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
                 </span>
             </a>
 
         </div>
 
-        <!-- 底部設計 Banner (優化解像度與尺寸) -->
+        <!-- 底部設計 Banner -->
         <div class="mt-32 bottom-banner-wrapper p-10 md:p-20 shadow-2xl">
             <div class="bottom-banner-bg"></div>
             <div class="relative-content text-center">
@@ -264,28 +305,182 @@
         <p>© 2026 Baewooja. All rights reserved.</p>
     </footer>
 
+    <!-- 登入彈出視窗 (Modal) -->
+    <div id="loginModal" class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden modal-enter relative">
+            <!-- 關閉按鈕 -->
+            <button id="closeModalBtn" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="bg-blue-600 p-8 text-center text-white">
+                <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 backdrop-blur-md border border-white/30">
+                    <i class="fas fa-unlock-alt"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-1">學員登入</h3>
+                <p class="text-blue-100 text-sm">解鎖所有專屬互動學習模組</p>
+            </div>
+            
+            <div class="p-8">
+                <form id="loginForm" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">學員帳號 (Email)</label>
+                        <div class="relative">
+                            <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" placeholder="輸入任意帳號進行測試" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">密碼</label>
+                        <div class="relative">
+                            <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="password" placeholder="輸入任意密碼" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-blue-200 mt-4 flex items-center justify-center gap-2">
+                        登入並解鎖課程 <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+                
+                <p class="text-center text-slate-400 text-xs mt-6">
+                    還沒有帳號？ <a href="https://wa.me/85263064331" target="_blank" class="text-blue-600 font-bold hover:underline">聯絡我們註冊</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登入邏輯腳本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const authBtn = document.getElementById('authBtn');
+            const authBtnText = document.getElementById('authBtnText');
+            const loginModal = document.getElementById('loginModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const loginForm = document.getElementById('loginForm');
+            const paidModules = document.querySelectorAll('.paid-module');
+
+            // 檢查 localStorage 獲取登入狀態 (初始狀態)
+            let isLoggedIn = localStorage.getItem('baewooja_logged_in') === 'true';
+
+            // 渲染畫面狀態
+            function renderState() {
+                if (isLoggedIn) {
+                    // 已登入狀態的 UI
+                    authBtnText.textContent = '登出系統';
+                    authBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> <span id="authBtnText">登出系統</span>';
+                    authBtn.classList.replace('text-blue-700', 'text-slate-600');
+                    authBtn.classList.replace('bg-blue-50', 'bg-slate-100');
+
+                    // 解鎖所有卡片
+                    paidModules.forEach(module => {
+                        module.classList.remove('locked-card');
+                        module.classList.add('glass-card');
+                        module.setAttribute('href', module.getAttribute('data-href')); // 賦予真實連結
+                        
+                        // 更新 Icon 樣式
+                        const iconWrapper = module.querySelector('.icon-wrapper');
+                        iconWrapper.classList.remove('text-slate-400');
+                        iconWrapper.querySelector('.module-icon').classList.replace('bg-slate-200', 'bg-blue-600');
+                        iconWrapper.querySelector('.module-icon').classList.add('text-white', 'shadow-lg', 'shadow-blue-200');
+                        
+                        // 更新 Badge 狀態
+                        const badge = module.querySelector('.status-badge');
+                        badge.classList.replace('bg-slate-300', 'bg-blue-500');
+                        badge.innerHTML = '<i class="fas fa-unlock mr-1"></i>已解鎖';
+
+                        // 更新文字顏色
+                        module.querySelector('.title-text').classList.replace('text-slate-700', 'text-slate-900');
+                        module.querySelector('.subtitle-text').classList.replace('text-slate-400', 'text-blue-500/60');
+                        module.querySelector('.desc-text').classList.replace('text-slate-500', 'text-slate-600');
+
+                        // 顯示「立即學習」按鈕
+                        module.querySelector('.action-btn').classList.remove('hidden');
+                    });
+                } else {
+                    // 未登入狀態的 UI (復原)
+                    authBtn.innerHTML = '<i class="fas fa-user-circle"></i> <span id="authBtnText">學員登入</span>';
+                    authBtn.classList.replace('text-slate-600', 'text-blue-700');
+                    authBtn.classList.replace('bg-slate-100', 'bg-blue-50');
+
+                    // 鎖定所有卡片
+                    paidModules.forEach(module => {
+                        module.classList.add('locked-card');
+                        module.classList.remove('glass-card');
+                        module.removeAttribute('href'); // 移除連結，防止點擊
+                        
+                        // 復原 Icon 樣式
+                        const iconWrapper = module.querySelector('.icon-wrapper');
+                        iconWrapper.classList.add('text-slate-400');
+                        iconWrapper.querySelector('.module-icon').classList.replace('bg-blue-600', 'bg-slate-200');
+                        iconWrapper.querySelector('.module-icon').classList.remove('text-white', 'shadow-lg', 'shadow-blue-200');
+                        
+                        // 復原 Badge 狀態
+                        const badge = module.querySelector('.status-badge');
+                        badge.classList.replace('bg-blue-500', 'bg-slate-300');
+                        badge.innerHTML = '<i class="fas fa-lock mr-1"></i>付費解鎖';
+
+                        // 復原文字顏色
+                        module.querySelector('.title-text').classList.replace('text-slate-900', 'text-slate-700');
+                        module.querySelector('.subtitle-text').classList.replace('text-blue-500/60', 'text-slate-400');
+                        module.querySelector('.desc-text').classList.replace('text-slate-600', 'text-slate-500');
+
+                        // 隱藏「立即學習」按鈕
+                        module.querySelector('.action-btn').classList.add('hidden');
+                    });
+                }
+            }
+
+            // 打開或關閉 Modal / 處理登出
+            authBtn.addEventListener('click', () => {
+                if (isLoggedIn) {
+                    // 執行登出
+                    if(confirm("確定要登出系統嗎？")) {
+                        isLoggedIn = false;
+                        localStorage.setItem('baewooja_logged_in', 'false');
+                        renderState();
+                    }
+                } else {
+                    // 執行登入 (打開 Modal)
+                    loginModal.classList.remove('hidden');
+                    loginModal.classList.add('flex');
+                }
+            });
+
+            // 關閉 Modal
+            closeModalBtn.addEventListener('click', () => {
+                loginModal.classList.add('hidden');
+                loginModal.classList.remove('flex');
+            });
+
+            // 點擊 Modal 背景也可關閉
+            loginModal.addEventListener('click', (e) => {
+                if (e.target === loginModal) {
+                    loginModal.classList.add('hidden');
+                    loginModal.classList.remove('flex');
+                }
+            });
+
+            // 處理登入表單提交
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault(); // 防止頁面重新整理
+                
+                // 這裡可以加入真實的 API 驗證，目前使用簡單模擬
+                isLoggedIn = true;
+                localStorage.setItem('baewooja_logged_in', 'true');
+                
+                // 關閉視窗並更新畫面
+                loginModal.classList.add('hidden');
+                loginModal.classList.remove('flex');
+                renderState();
+
+                // 可選：加上一個登入成功的小提示
+                setTimeout(() => alert('登入成功！已解鎖所有付費模組。'), 100);
+            });
+
+            // 初始執行一次渲染
+            renderState();
+        });
+    </script>
 </body>
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDYo2OW_0B8wRkn1hEP_UTc63eMtmJwVQA",
-    authDomain: "baewooja-app.firebaseapp.com",
-    projectId: "baewooja-app",
-    storageBucket: "baewooja-app.firebasestorage.app",
-    messagingSenderId: "376936397253",
-    appId: "1:376936397253:web:029870e86e903125b133ac",
-    measurementId: "G-35RVDF6DBF"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
 </html>
