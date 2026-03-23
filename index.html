@@ -90,8 +90,8 @@
             
             <!-- 登入按鈕 -->
             <button id="authBtn" class="flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-2 px-4 rounded-full transition-colors border border-blue-200 shadow-sm text-sm">
-                <i class="fas fa-user-circle"></i>
-                <span id="authBtnText">學員登入</span>
+                <i class="fas fa-spinner fa-spin"></i>
+                <span id="authBtnText">載入中...</span>
             </button>
         </div>
     </nav>
@@ -327,19 +327,21 @@
                         <label class="block text-sm font-bold text-slate-700 mb-2">學員帳號 (Email)</label>
                         <div class="relative">
                             <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="text" placeholder="輸入任意帳號進行測試" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                            <!-- 【更新】加入 id="emailInput" 並修改 type="email" -->
+                            <input type="email" id="emailInput" placeholder="請輸入註冊的 Email" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
                         </div>
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">密碼</label>
                         <div class="relative">
                             <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="password" placeholder="輸入任意密碼" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
+                            <!-- 【更新】加入 id="passwordInput" -->
+                            <input type="password" id="passwordInput" placeholder="請輸入密碼" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all">
                         </div>
                     </div>
                     
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-blue-200 mt-4 flex items-center justify-center gap-2">
-                        登入並解鎖課程 <i class="fas fa-arrow-right"></i>
+                    <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-blue-200 mt-4 flex items-center justify-center gap-2">
+                        <span>登入並解鎖課程</span> <i class="fas fa-arrow-right"></i>
                     </button>
                 </form>
                 
@@ -350,22 +352,46 @@
         </div>
     </div>
 
-    <!-- 登入邏輯腳本 -->
-    <script>
+    <!-- 【更新】整合 Firebase Authentication 真實驗證腳本 (Type Module) -->
+    <script type="module">
+        // 匯入 Firebase SDK 模組 (v12.11.0)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
+
+        // Firebase 專案配置 (使用你提供的設定)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDYo2OW_0B8wRkn1hEP_UTc63eMtmJwVQA",
+            authDomain: "baewooja-app.firebaseapp.com",
+            projectId: "baewooja-app",
+            storageBucket: "baewooja-app.firebasestorage.app",
+            messagingSenderId: "376936397253",
+            appId: "1:376936397253:web:029870e86e903125b133ac",
+            measurementId: "G-35RVDF6DBF"
+        };
+
+        // 初始化 Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app); // 取得 Auth 實例
+
         document.addEventListener('DOMContentLoaded', () => {
             const authBtn = document.getElementById('authBtn');
             const authBtnText = document.getElementById('authBtnText');
             const loginModal = document.getElementById('loginModal');
             const closeModalBtn = document.getElementById('closeModalBtn');
             const loginForm = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const emailInput = document.getElementById('emailInput');
+            const passwordInput = document.getElementById('passwordInput');
             const paidModules = document.querySelectorAll('.paid-module');
 
-            // 檢查 localStorage 獲取登入狀態 (初始狀態)
-            let isLoggedIn = localStorage.getItem('baewooja_logged_in') === 'true';
+            // 記錄當前用戶狀態
+            let currentUser = null; 
 
-            // 渲染畫面狀態
+            // 渲染畫面狀態 (根據 currentUser 變數)
             function renderState() {
-                if (isLoggedIn) {
+                if (currentUser) {
                     // 已登入狀態的 UI
                     authBtnText.textContent = '登出系統';
                     authBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> <span id="authBtnText">登出系統</span>';
@@ -431,14 +457,24 @@
                 }
             }
 
+            // 【重點 1】監聽 Firebase 登入狀態變化
+            onAuthStateChanged(auth, (user) => {
+                // 不管是剛開啟網頁，還是剛登入/登出成功，都會觸發這裡
+                currentUser = user; 
+                renderState(); // 重新渲染畫面
+            });
+
             // 打開或關閉 Modal / 處理登出
-            authBtn.addEventListener('click', () => {
-                if (isLoggedIn) {
-                    // 執行登出
+            authBtn.addEventListener('click', async () => {
+                if (currentUser) {
+                    // 【重點 2】執行真實 Firebase 登出
                     if(confirm("確定要登出系統嗎？")) {
-                        isLoggedIn = false;
-                        localStorage.setItem('baewooja_logged_in', 'false');
-                        renderState();
+                        try {
+                            await signOut(auth);
+                            // 登出成功後，onAuthStateChanged 會自動觸發並鎖定畫面
+                        } catch (error) {
+                            alert("登出發生錯誤：" + error.message);
+                        }
                     }
                 } else {
                     // 執行登入 (打開 Modal)
@@ -461,25 +497,46 @@
                 }
             });
 
-            // 處理登入表單提交
-            loginForm.addEventListener('submit', (e) => {
+            // 【重點 3】處理登入表單提交 (真實 API 驗證)
+            loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault(); // 防止頁面重新整理
                 
-                // 這裡可以加入真實的 API 驗證，目前使用簡單模擬
-                isLoggedIn = true;
-                localStorage.setItem('baewooja_logged_in', 'true');
-                
-                // 關閉視窗並更新畫面
-                loginModal.classList.add('hidden');
-                loginModal.classList.remove('flex');
-                renderState();
+                const email = emailInput.value;
+                const password = passwordInput.value;
 
-                // 可選：加上一個登入成功的小提示
-                setTimeout(() => alert('登入成功！已解鎖所有付費模組。'), 100);
+                // 讓按鈕顯示載入中
+                submitBtn.disabled = true;
+                const originalBtnContent = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>驗證中...</span>';
+
+                try {
+                    // 呼叫 Firebase 登入 API
+                    await signInWithEmailAndPassword(auth, email, password);
+                    
+                    // 登入成功
+                    loginModal.classList.add('hidden');
+                    loginModal.classList.remove('flex');
+                    
+                    // 清空密碼框策安全
+                    passwordInput.value = '';
+                    
+                    setTimeout(() => alert('登入成功！已為您解鎖所有付費模組。'), 100);
+                    // 注意：不需要手動呼叫 renderState()，因為 onAuthStateChanged 會自動捕捉到登入成功並渲染
+                    
+                } catch (error) {
+                    // 登入失敗處理
+                    console.error("登入錯誤:", error);
+                    let errorMsg = "登入失敗，請檢查帳號密碼。";
+                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                        errorMsg = "帳號或密碼錯誤，請重新輸入！";
+                    }
+                    alert(errorMsg);
+                } finally {
+                    // 恢復按鈕狀態
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnContent;
+                }
             });
-
-            // 初始執行一次渲染
-            renderState();
         });
     </script>
 </body>
