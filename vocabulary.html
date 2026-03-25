@@ -3,527 +3,553 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>核心單字學習 | Baewooja</title>
+    <title>TOPIK 核心單字全方位學習</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap');
-        body { font-family: 'Noto Sans TC', 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
-        .korean-font { font-family: 'Noto Sans KR', sans-serif; }
         
+        :root {
+            --primary: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+        }
+
+        body { 
+            font-family: 'Noto Sans TC', 'Noto Sans KR', sans-serif; 
+            background-color: #f3f4f6;
+        }
+
+        .korean-font { font-family: 'Noto Sans KR', sans-serif; }
+
+        /* 卡片翻轉動畫 */
+        .perspective-1000 { perspective: 1000px; }
+        .inner-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .inner-card.is-flipped { transform: rotateY(180deg); }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 1.5rem;
+            padding: 2rem;
+        }
+        .card-back { transform: rotateY(180deg); }
+
+        .active-tab { 
+            background-color: white; 
+            color: var(--primary); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 隱藏滾動條 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .perspective-1000 { perspective: 1000px; }
-        .transform-style-3d { transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-        .backface-hidden { backface-visibility: hidden; }
-        .rotate-y-180 { transform: rotateY(180deg); }
-        .flashcard-front, .flashcard-back { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; backface-visibility: hidden;}
-        .flashcard-front { transform: rotateY(0deg); }
-        .flashcard-back { transform: rotateY(180deg); }
-
-        .tab-btn.active { background-color: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
-        .mode-btn.active { color: #2563eb; border-bottom: 3px solid #2563eb; font-weight: bold; }
-        
-        #progress-bar { transition: width 0.3s ease-in-out; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.2s ease-in-out 0s 2; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-slate-800">
+<body class="min-h-screen text-slate-800">
 
-    <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200 p-4 shadow-sm">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-2 text-slate-500 hover:text-blue-600 transition font-medium">
-                <i class="fas fa-arrow-left"></i> 返回
-            </a>
-            <div class="font-bold text-lg tracking-wider text-blue-900 korean-font">
-                단어 (Vocabulary)
+    <!-- 導航欄 -->
+    <nav class="bg-indigo-700 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition" onclick="setMode('index')" title="回到學習總覽">
+                <i class="fas fa-language text-2xl"></i>
+                <h1 class="font-bold text-xl tracking-tight">韓文單字大師</h1>
             </div>
-            <!-- 使用者狀態與雲端狀態 -->
-            <div class="flex items-center gap-3">
-                <div id="auth-status" class="text-xs font-medium px-3 py-1 bg-slate-100 text-slate-500 rounded-full flex items-center gap-2">
-                    <i class="fas fa-spinner fa-spin"></i> 正在連線...
-                </div>
+            <div id="sync-status" class="text-xs bg-indigo-800 px-3 py-1 rounded-full flex items-center gap-2">
+                <i class="fas fa-database"></i> <span>等待同步...</span>
             </div>
         </div>
     </nav>
 
-    <main class="flex-1 max-w-4xl mx-auto w-full p-4 md:p-8">
+    <main class="max-w-4xl mx-auto p-4 md:p-6">
         
-        <header class="mb-8 text-center relative">
-            <h1 class="text-3xl md:text-4xl font-black text-slate-900 mb-4">核心單字庫</h1>
-            
-            <div class="inline-flex bg-slate-200/60 p-1 rounded-2xl mb-6">
-                <button onclick="window.setLevel('beginner')" id="btn-beginner" class="tab-btn active px-6 py-2 rounded-xl text-sm font-bold text-slate-600 transition-all">
-                    初級 (TOPIK I)
-                </button>
-                <button onclick="window.setLevel('intermediate')" id="btn-intermediate" class="tab-btn px-6 py-2 rounded-xl text-sm font-bold text-slate-600 transition-all">
-                    中級 (TOPIK II)
-                </button>
+        <!-- 控制面板 -->
+        <section class="mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 級別切換 -->
+                <div class="bg-white p-2 rounded-2xl shadow-sm flex">
+                    <button onclick="changeLevel('beginner')" id="btn-beginner" class="flex-1 py-3 rounded-xl font-bold transition-all active-tab">初級 (Beginner)</button>
+                    <button onclick="changeLevel('intermediate')" id="btn-intermediate" class="flex-1 py-3 rounded-xl font-bold transition-all text-slate-400">中級 (Intermediate)</button>
+                </div>
+                <!-- 來源同步 -->
+                <div class="flex gap-2">
+                    <button onclick="syncData()" class="flex-1 bg-slate-800 text-white py-3 rounded-2xl font-bold hover:bg-black transition flex items-center justify-center gap-2">
+                        <i class="fab fa-github"></i> 從 GitHub 同步
+                    </button>
+                    <label class="bg-white border-2 border-slate-200 p-3 rounded-2xl cursor-pointer hover:bg-slate-50 transition">
+                        <i class="fas fa-file-csv text-indigo-600"></i>
+                        <input type="file" class="hidden" onchange="handleLocalCSV(event)" accept=".csv">
+                    </label>
+                </div>
             </div>
-            
-            <div class="flex justify-center items-center gap-4 text-sm">
-                <p class="text-slate-500">搭載雲端記憶系統，自動儲存學習進度。</p>
-                <!-- 匯入 CSV 按鈕 -->
-                <label for="csv-upload" class="cursor-pointer bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm">
-                    <i class="fas fa-file-import"></i> 匯入官方 CSV
-                </label>
-                <input type="file" id="csv-upload" accept=".csv" class="hidden" onchange="window.handleCSVUpload(event)">
-            </div>
-        </header>
+        </section>
 
-        <!-- 學習進度條 -->
-        <div class="mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+        <!-- 進度條 -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mb-8">
             <div class="flex justify-between items-end mb-2">
-                <span class="text-sm font-bold text-slate-600">本級別學習進度</span>
-                <span id="progress-text" class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">0%</span>
+                <span id="current-level-label" class="text-sm font-bold text-slate-500">當前級別：初級</span>
+                <span id="progress-percent" class="text-2xl font-black text-indigo-600">0%</span>
             </div>
-            <div class="w-full bg-slate-100 rounded-full h-2.5">
-                <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-2.5 rounded-full" style="width: 0%"></div>
+            <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
             </div>
+            <div class="mt-2 text-right text-xs text-slate-400 font-medium" id="progress-stats">0 / 0 單字</div>
         </div>
 
-        <div class="flex border-b border-slate-200 mb-8 overflow-x-auto no-scrollbar">
-            <button onclick="window.setMode('list')" id="mode-list" class="mode-btn active px-4 py-3 text-sm font-medium text-slate-500 whitespace-nowrap transition-all flex items-center gap-2">
-                <i class="fas fa-list"></i> 列表
+        <!-- 模式切換 -->
+        <div class="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-2">
+            <button onclick="setMode('index')" id="mode-index" class="mode-btn px-6 py-3 bg-white rounded-xl text-sm font-bold shadow-sm whitespace-nowrap border-b-4 border-indigo-500 text-indigo-600">
+                <i class="fas fa-home mr-2"></i>學習總覽
             </button>
-            <button onclick="window.setMode('flashcard')" id="mode-flashcard" class="mode-btn px-4 py-3 text-sm font-medium text-slate-500 whitespace-nowrap transition-all flex items-center gap-2">
-                <i class="fas fa-clone"></i> 字卡
+            <button onclick="setMode('list')" id="mode-list" class="mode-btn px-6 py-3 bg-white rounded-xl text-sm font-bold shadow-sm whitespace-nowrap text-slate-500">
+                <i class="fas fa-list mr-2"></i>單字清單
             </button>
-            <button onclick="window.setMode('mc')" id="mode-mc" class="mode-btn px-4 py-3 text-sm font-medium text-slate-500 whitespace-nowrap transition-all flex items-center gap-2">
-                <i class="fas fa-check-square"></i> 測驗
+            <button onclick="setMode('flashcard')" id="mode-flashcard" class="mode-btn px-6 py-3 bg-white rounded-xl text-sm font-bold shadow-sm whitespace-nowrap text-slate-500">
+                <i class="fas fa-clone mr-2"></i>記憶字卡
             </button>
-            <button onclick="window.setMode('spelling')" id="mode-spelling" class="mode-btn px-4 py-3 text-sm font-medium text-slate-500 whitespace-nowrap transition-all flex items-center gap-2">
-                <i class="fas fa-keyboard"></i> 拼寫
+            <button onclick="setMode('quiz')" id="mode-quiz" class="mode-btn px-6 py-3 bg-white rounded-xl text-sm font-bold shadow-sm whitespace-nowrap text-slate-500">
+                <i class="fas fa-tasks mr-2"></i>選擇測驗
+            </button>
+            <button onclick="setMode('spell')" id="mode-spell" class="mode-btn px-6 py-3 bg-white rounded-xl text-sm font-bold shadow-sm whitespace-nowrap text-slate-500">
+                <i class="fas fa-keyboard mr-2"></i>拼寫練習
             </button>
         </div>
 
-        <div id="app-container" class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-10 min-h-[400px]">
-            <!-- 內容由 JavaScript 渲染 -->
+        <!-- 主視窗容器 -->
+        <div id="main-view" class="bg-white rounded-[2rem] shadow-xl p-6 min-h-[500px] flex flex-col items-center justify-center relative border border-slate-100">
+            <div class="text-center opacity-30">
+                <i class="fas fa-cloud-download-alt text-7xl mb-4"></i>
+                <p class="text-xl font-bold">尚未同步資料</p>
+                <p>請點擊 GitHub 同步或手動匯入 CSV</p>
+            </div>
         </div>
 
     </main>
 
-    <!-- Firebase & Core Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- 吐司消息 -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-2xl opacity-0 transition-opacity pointer-events-none z-[100] font-bold"></div>
 
-        // Firebase 初始化
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { projectId: "mock-project" };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-        /* =========================================
-           1. 資料庫 (從 Excel Snippets 提取的真實資料)
-           ========================================= */
-        window.vocabData = {
-            beginner: [
-                { ko: "가게", pos: "명사", guide: "에 가다", zh: "商店" },
-                { ko: "가격", pos: "명사", guide: "이 비싸다", zh: "價格" },
-                { ko: "가구", pos: "명사", guide: "책상", zh: "家具" },
-                { ko: "가깝다", pos: "형용사", guide: "거리가", zh: "近的" },
-                { ko: "가끔", pos: "부사", guide: "가끔 보다", zh: "偶爾" },
-                { ko: "가늘다", pos: "형용사", guide: "손가락이", zh: "細的" },
-                { ko: "가다", pos: "동사", guide: "학교에", zh: "去" },
-                { ko: "가득", pos: "부사", guide: "가득 담다", zh: "滿滿地" },
-                { ko: "가르치다", pos: "동사", guide: "한국어를", zh: "教" },
-                { ko: "가리키다", pos: "동사", guide: "손가락으로", zh: "指著" },
-                { ko: "가방", pos: "명사", guide: "을 메다", zh: "包包" },
-                { ko: "한복", pos: "명사", guide: "을 입다", zh: "韓服" },
-                { ko: "한식", pos: "명사", guide: "을 먹다", zh: "韓食" }
-            ],
-            intermediate: [
-                { ko: "가까이", pos: "부사/명사", guide: "가까이 다가오다", zh: "靠近地" },
-                { ko: "가꾸다", pos: "동사", guide: "나무를 가꾸다", zh: "栽種/打扮" },
-                { ko: "가난", pos: "명사", guide: "에 찌들다", zh: "貧窮" },
-                { ko: "가능", pos: "명사", guide: "주차 가능", zh: "可能" },
-                { ko: "가능성", pos: "명사", guide: "이 높다", zh: "可能性" },
-                { ko: "가득하다", pos: "형용사", guide: "물이", zh: "充滿的" },
-                { ko: "가라앉다", pos: "동사", guide: "먼지가", zh: "沉入" },
-                { ko: "가로등", pos: "명사", guide: "이 켜지다", zh: "路燈" },
-                { ko: "가로막다", pos: "동사", guide: "길을", zh: "阻擋" },
-                { ko: "가루", pos: "명사", guide: "로 만들다", zh: "粉末" },
-                { ko: "화재", pos: "명사", guide: "가 발생하다", zh: "火災" },
-                { ko: "확신", pos: "명사", guide: "이 서다", zh: "確信" }
-            ]
+    <script>
+        // 設定 GitHub 連結 (請更換為您的 Raw 網址)
+        const GITHUB_CSV_URLS = {
+            beginner: "https://raw.githubusercontent.com/你的用戶名/你的儲存庫/main/topik_beginner_zh.csv",
+            intermediate: "https://raw.githubusercontent.com/你的用戶名/你的儲存庫/main/topik_intermediate_zh.csv"
         };
 
-        /* =========================================
-           2. 系統狀態管理 (支援多帳號進度)
-           ========================================= */
-        let currentLevel = 'beginner'; 
-        let currentMode = 'list';      
-        let currentUser = null;
-        
-        // 儲存每個級別的學習進度 (包含 index 與 score)
-        let userProgress = {
-            beginner: { index: 0, score: 0 },
-            intermediate: { index: 0, score: 0 }
-        };
-
-        // TTS
-        window.playAudio = (text) => {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ko-KR'; 
-            utterance.rate = 0.85;    
-            window.speechSynthesis.speak(utterance);
-        };
-
-        /* =========================================
-           3. Firebase 認證與進度同步
-           ========================================= */
-        const initAuth = async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token).catch(e => console.error(e));
-            } else {
-                await signInAnonymously(auth).catch(e => console.error(e));
+        // 應用程式狀態
+        let state = {
+            currentLevel: 'beginner',
+            currentMode: 'index',
+            data: {
+                beginner: [],
+                intermediate: []
+            },
+            progress: {
+                beginner: 0,
+                intermediate: 0
             }
         };
 
-        onAuthStateChanged(auth, async (user) => {
-            const statusEl = document.getElementById('auth-status');
-            if (user) {
-                currentUser = user;
-                statusEl.innerHTML = `<i class="fas fa-cloud text-emerald-500"></i> 進度已同步`;
-                await loadProgressFromCloud();
-            } else {
-                statusEl.innerHTML = `<i class="fas fa-exclamation-triangle text-amber-500"></i> 未登入`;
+        // 初始化
+        window.onload = () => {
+            const saved = localStorage.getItem('baewooja_master_v2');
+            if (saved) {
+                state = JSON.parse(saved);
+                updateUI();
+                renderView();
             }
-            renderMode();
-        });
+        };
 
-        async function loadProgressFromCloud() {
-            if (!currentUser) return;
+        function saveState() {
+            localStorage.setItem('baewooja_master_v2', JSON.stringify(state));
+            updateUI();
+        }
+
+        // --- 同步與解析 ---
+        async function syncData() {
+            updateSyncStatus('syncing', '同步中...');
             try {
-                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'progress', 'vocab');
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    userProgress = { ...userProgress, ...docSnap.data() };
-                }
-                updateProgressBar();
-            } catch (e) {
-                console.error("載入進度失敗:", e);
+                const [begRes, intRes] = await Promise.all([
+                    fetch(GITHUB_CSV_URLS.beginner).then(r => r.text()),
+                    fetch(GITHUB_CSV_URLS.intermediate).then(r => r.text())
+                ]);
+                state.data.beginner = parseCSV(begRes);
+                state.data.intermediate = parseCSV(intRes);
+                saveState();
+                showToast("同步成功！");
+                updateSyncStatus('success', '雲端同步完成');
+                renderView();
+            } catch (err) {
+                console.error(err);
+                showToast("同步失敗，請檢查 Raw 網址或儲存庫權限");
+                updateSyncStatus('error', '同步失敗');
             }
         }
 
-        async function saveProgressToCloud() {
-            if (!currentUser) return;
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'progress', 'vocab');
-                await setDoc(docRef, userProgress, { merge: true });
-                updateProgressBar();
-            } catch (e) {
-                console.error("儲存進度失敗:", e);
-            }
-        }
-
-        function updateProgressBar() {
-            const totalWords = window.vocabData[currentLevel].length;
-            const currentIndex = userProgress[currentLevel].index;
-            const percent = totalWords === 0 ? 0 : Math.min(100, Math.round(((currentIndex) / totalWords) * 100));
-            
-            document.getElementById('progress-bar').style.width = `${percent}%`;
-            document.getElementById('progress-text').innerText = `${percent}% (${currentIndex}/${totalWords})`;
-        }
-
-        /* =========================================
-           4. CSV 匯入解析邏輯
-           ========================================= */
-        window.handleCSVUpload = (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-
+        function handleLocalCSV(e) {
+            const file = e.target.files[0];
+            if(!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const rows = text.split('\n');
-                
-                let importedCount = 0;
-                rows.forEach((row, index) => {
-                    if (index === 0) return; // 跳過標題
-                    const cols = row.split(',');
-                    if (cols.length >= 4) {
-                        const levelStr = cols[0].trim();
-                        const wordKo = cols[1].trim().replace(/[0-9]/g, ''); // 移除數字標記
-                        const guideStr = cols[2].trim();
-                        const posStr = cols[3].trim();
-                        
-                        const wordObj = { ko: wordKo, pos: posStr, guide: guideStr, zh: "請查字典" }; // CSV內無中文，預設提示
-
-                        if (levelStr.includes("초급")) {
-                            if(!window.vocabData.beginner.find(w => w.ko === wordKo)) {
-                                window.vocabData.beginner.push(wordObj);
-                                importedCount++;
-                            }
-                        } else if (levelStr.includes("중급")) {
-                            if(!window.vocabData.intermediate.find(w => w.ko === wordKo)) {
-                                window.vocabData.intermediate.push(wordObj);
-                                importedCount++;
-                            }
-                        }
-                    }
-                });
-                
-                // 匯入完成顯示提示視窗（取代 Alert）
-                showToast(`成功匯入 ${importedCount} 個新單字！請重新整理列表。`);
-                updateProgressBar();
-                renderMode();
+            reader.onload = function(evt) {
+                const content = evt.target.result;
+                const parsed = parseCSV(content);
+                // 根據檔案內容推測級別
+                if (content.includes("초급") || content.includes("初級")) {
+                    state.data.beginner = parsed;
+                    state.currentLevel = 'beginner';
+                } else {
+                    state.data.intermediate = parsed;
+                    state.currentLevel = 'intermediate';
+                }
+                saveState();
+                changeLevel(state.currentLevel);
+                showToast("本地匯入完成");
             };
             reader.readAsText(file);
-        };
-
-        function showToast(msg) {
-            const toast = document.createElement('div');
-            toast.className = 'fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-2 font-bold';
-            toast.innerHTML = `<i class="fas fa-check-circle text-emerald-400"></i> ${msg}`;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
         }
 
-        /* =========================================
-           5. UI 切換邏輯
-           ========================================= */
-        window.setLevel = (level) => {
-            currentLevel = level;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-${level}`).classList.add('active');
-            updateProgressBar();
-            renderMode();
-        };
-
-        window.setMode = (mode) => {
-            currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`mode-${mode}`).classList.add('active');
-            renderMode();
-        };
-
-        window.renderMode = () => {
-            const container = document.getElementById('app-container');
-            container.innerHTML = ''; 
-            
-            const words = window.vocabData[currentLevel];
-            if(words.length === 0) {
-                return container.innerHTML = `<div class="text-center py-10 text-slate-500">目前沒有資料，請點擊上方匯入 CSV。</div>`;
+        function parseCSV(text) {
+            const lines = text.split(/\r?\n/);
+            const result = [];
+            // 跳過標題行，從 i=1 開始
+            for(let i = 1; i < lines.length; i++) {
+                if(!lines[i].trim()) continue;
+                
+                // 處理可能包含引號的 CSV 格式
+                const cols = lines[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
+                
+                if(cols.length >= 5) {
+                    result.push({
+                        level: cols[0],
+                        ko: cols[1].replace(/\d+$/, ''), // 移除韓文單字後的數字，例如 가게01 -> 가게
+                        raw_ko: cols[1],
+                        guide: cols[2] === '−' || cols[2] === '-' ? '' : cols[2],
+                        pos: cols[3],
+                        zh: cols[4]
+                    });
+                }
             }
+            return result;
+        }
 
-            if (currentMode === 'list') renderList(container, words);
-            else if (currentMode === 'flashcard') renderFlashcard(container, words);
-            else if (currentMode === 'mc') renderMC(container, words);
-            else if (currentMode === 'spelling') renderSpelling(container, words);
-        };
+        // --- UI 更新與導航 ---
+        function changeLevel(lv) {
+            state.currentLevel = lv;
+            document.getElementById('btn-beginner').className = lv === 'beginner' ? 'flex-1 py-3 rounded-xl font-bold transition-all active-tab' : 'flex-1 py-3 rounded-xl font-bold transition-all text-slate-400';
+            document.getElementById('btn-intermediate').className = lv === 'intermediate' ? 'flex-1 py-3 rounded-xl font-bold transition-all active-tab' : 'flex-1 py-3 rounded-xl font-bold transition-all text-slate-400';
+            document.getElementById('current-level-label').innerText = `當前級別：${lv === 'beginner' ? '初級' : '中級'}`;
+            updateUI();
+            renderView();
+        }
 
-        /* =========================================
-           6. 各模組渲染
-           ========================================= */
-        function renderList(container, words) {
-            let html = `
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-slate-800">全部單字 (${words.length})</h2>
-                </div>
-                <div class="grid grid-cols-1 gap-3 h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-            `;
+        function setMode(mode) {
+            state.currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('border-b-4', 'border-indigo-500', 'text-indigo-600');
+                btn.classList.add('text-slate-500');
+            });
+            const activeBtn = document.getElementById(`mode-${mode}`);
+            if(activeBtn) {
+                activeBtn.classList.add('border-b-4', 'border-indigo-500', 'text-indigo-600');
+                activeBtn.classList.remove('text-slate-500');
+            }
+            renderView();
+        }
+
+        function updateUI() {
+            const currentList = state.data[state.currentLevel];
+            const currentProgress = state.progress[state.currentLevel];
+            const percent = currentList.length > 0 ? Math.round((currentProgress / currentList.length) * 100) : 0;
             
-            words.forEach((word, index) => {
-                const isLearned = index < userProgress[currentLevel].index;
-                html += `
-                    <div class="flex items-center justify-between p-4 bg-slate-50 border ${isLearned ? 'border-emerald-200 bg-emerald-50/30' : 'border-slate-100'} rounded-2xl hover:border-blue-200 transition-all group">
-                        <div class="flex items-center gap-4">
-                            <button onclick="window.playAudio('${word.ko}')" class="w-10 h-10 rounded-full bg-white text-blue-500 shadow-sm flex items-center justify-center hover:bg-blue-500 hover:text-white transition-colors">
-                                <i class="fas fa-volume-up"></i>
-                            </button>
-                            <div>
-                                <div class="flex items-baseline gap-2">
-                                    <span class="text-xl font-bold text-slate-900 korean-font">${word.ko}</span>
-                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded text-slate-500 bg-slate-200">${word.pos}</span>
-                                    ${isLearned ? '<i class="fas fa-check-circle text-emerald-500 text-sm ml-2" title="已學習"></i>' : ''}
-                                </div>
-                                <div class="text-sm text-slate-400 korean-font mt-1">搭配：${word.guide}</div>
-                            </div>
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+            document.getElementById('progress-percent').innerText = `${percent}%`;
+            document.getElementById('progress-stats').innerText = `${currentProgress} / ${currentList.length} 單字`;
+        }
+
+        function updateSyncStatus(type, text) {
+            const el = document.getElementById('sync-status');
+            el.innerHTML = `<i class="fas fa-${type === 'syncing' ? 'spinner fa-spin' : (type === 'success' ? 'check-circle text-emerald-400' : 'exclamation-triangle text-red-400')}"></i> <span>${text}</span>`;
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.opacity = '1';
+            setTimeout(() => t.style.opacity = '0', 2000);
+        }
+
+        // --- 渲染邏輯 ---
+        function renderView() {
+            const container = document.getElementById('main-view');
+            const words = state.data[state.currentLevel];
+            
+            if (words.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center animate-fade-in">
+                        <div class="opacity-20 mb-6">
+                            <i class="fas fa-file-csv text-8xl"></i>
                         </div>
-                        <div class="text-right">
-                            <div class="font-bold text-slate-700">${word.zh}</div>
-                        </div>
+                        <h2 class="text-2xl font-bold text-slate-400 mb-2">尚未讀取單字庫</h2>
+                        <p class="text-slate-400">請從上方同步 GitHub 或匯入 CSV 檔案</p>
                     </div>
                 `;
-            });
-            html += `</div>`;
-            container.innerHTML = html;
+                return;
+            }
+
+            switch(state.currentMode) {
+                case 'index': renderIndex(container, words); break;
+                case 'list': renderList(container, words); break;
+                case 'flashcard': renderFlashcard(container, words); break;
+                case 'quiz': renderQuiz(container, words); break;
+                case 'spell': renderSpell(container, words); break;
+            }
+        }
+
+        function renderIndex(container, words) {
+            const levelText = state.currentLevel === 'beginner' ? '初級' : '中級';
+            const progress = state.progress[state.currentLevel];
+            const total = words.length;
+            const percent = total > 0 ? Math.round((progress / total) * 100) : 0;
+
+            container.innerHTML = `
+                <div class="w-full h-full flex flex-col items-center justify-center p-2 text-center animate-fade-in">
+                    <div class="mb-10">
+                        <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+                            <i class="fas fa-graduation-cap text-4xl text-indigo-600"></i>
+                        </div>
+                        <h2 class="text-3xl md:text-4xl font-black text-slate-800 mb-4">歡迎來到 ${levelText} 單字庫</h2>
+                        <p class="text-slate-500 text-lg font-medium">學習進度：<span class="text-indigo-600 font-bold">${progress} / ${total}</span> (${percent}%)</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
+                        <button onclick="setMode('list')" class="p-6 bg-slate-50 hover:bg-white border-2 border-slate-100 hover:border-indigo-300 rounded-3xl transition-all group shadow-sm hover:shadow-md text-left flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-indigo-100 flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fas fa-list text-2xl text-indigo-600"></i></div>
+                            <div><h3 class="text-xl font-bold text-slate-800">單字清單</h3><p class="text-sm text-slate-500">瀏覽所有單字與發音</p></div>
+                        </button>
+                        <button onclick="setMode('flashcard')" class="p-6 bg-slate-50 hover:bg-white border-2 border-slate-100 hover:border-emerald-300 rounded-3xl transition-all group shadow-sm hover:shadow-md text-left flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fas fa-clone text-2xl text-emerald-600"></i></div>
+                            <div><h3 class="text-xl font-bold text-slate-800">記憶字卡</h3><p class="text-sm text-slate-500">建立視覺短期記憶</p></div>
+                        </button>
+                        <button onclick="setMode('quiz')" class="p-6 bg-slate-50 hover:bg-white border-2 border-slate-100 hover:border-amber-300 rounded-3xl transition-all group shadow-sm hover:shadow-md text-left flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-amber-100 flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fas fa-tasks text-2xl text-amber-600"></i></div>
+                            <div><h3 class="text-xl font-bold text-slate-800">選擇測驗</h3><p class="text-sm text-slate-500">測試單字理解力</p></div>
+                        </button>
+                        <button onclick="setMode('spell')" class="p-6 bg-slate-50 hover:bg-white border-2 border-slate-100 hover:border-rose-300 rounded-3xl transition-all group shadow-sm hover:shadow-md text-left flex items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-rose-100 flex items-center justify-center group-hover:scale-110 transition-transform"><i class="fas fa-keyboard text-2xl text-rose-600"></i></div>
+                            <div><h3 class="text-xl font-bold text-slate-800">拼寫練習</h3><p class="text-sm text-slate-500">打字強化長期記憶</p></div>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderList(container, words) {
+            container.innerHTML = `
+                <div class="w-full h-full max-h-[600px] overflow-y-auto no-scrollbar pr-2 animate-fade-in">
+                    <div class="space-y-3">
+                        ${words.map((w) => `
+                            <div class="group flex items-center justify-between p-4 bg-slate-50 rounded-2xl border-2 border-transparent hover:border-indigo-200 hover:bg-white transition-all">
+                                <div class="flex items-center gap-4">
+                                    <button onclick="playKo('${w.ko}')" class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-indigo-500 hover:bg-indigo-500 hover:text-white transition">
+                                        <i class="fas fa-volume-up"></i>
+                                    </button>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-lg font-bold korean-font">${w.ko}</span>
+                                            <span class="text-[10px] bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-md font-bold uppercase">${w.pos}</span>
+                                        </div>
+                                        <div class="text-sm text-slate-500 font-medium">${w.zh}</div>
+                                    </div>
+                                </div>
+                                <div class="text-xs text-slate-300 font-medium korean-font group-hover:text-slate-500">${w.guide}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
         }
 
         function renderFlashcard(container, words) {
-            let idx = userProgress[currentLevel].index;
-            if (idx >= words.length) idx = 0; // 若完成則重頭
-            
-            const word = words[idx];
-            
+            let idx = state.progress[state.currentLevel];
+            if (idx >= words.length) {
+                container.innerHTML = `<div class="text-center animate-fade-in"><h2 class="text-4xl font-black text-emerald-500 mb-6">全部完成！</h2><button onclick="resetProgress()" class="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold shadow-lg">重新開始學習</button></div>`;
+                return;
+            }
+            const w = words[idx];
             container.innerHTML = `
-                <div class="text-center mb-6 flex justify-between items-center">
-                    <span class="text-sm font-bold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">字卡進度 ${idx + 1} / ${words.length}</span>
-                </div>
-                
-                <div class="perspective-1000 w-full max-w-sm mx-auto h-72 mb-8 cursor-pointer" onclick="window.toggleFlashcard()">
-                    <div id="flashcard-inner" class="relative w-full h-full transform-style-3d">
-                        
-                        <div class="flashcard-front bg-blue-600 rounded-3xl p-8 flex flex-col items-center justify-center text-white shadow-xl shadow-blue-200 border border-blue-500">
-                            <span class="absolute top-4 right-4 text-blue-300 text-sm"><i class="fas fa-hand-pointer"></i> 點擊翻轉</span>
-                            <span class="text-sm font-medium bg-blue-500/50 px-3 py-1 rounded-full mb-4">${word.pos}</span>
-                            <h2 class="text-5xl font-bold korean-font mb-6 tracking-wide">${word.ko}</h2>
-                            <button onclick="event.stopPropagation(); window.playAudio('${word.ko}')" class="w-12 h-12 rounded-full bg-white text-blue-600 flex items-center justify-center text-xl hover:scale-110 transition-transform">
-                                <i class="fas fa-volume-up"></i>
-                            </button>
+                <div class="w-full flex flex-col items-center animate-fade-in">
+                    <div class="perspective-1000 w-full max-w-sm h-80 mb-8" onclick="toggleFlip()">
+                        <div id="flash-inner" class="inner-card">
+                            <div class="card-face bg-indigo-600 text-white shadow-2xl">
+                                <span class="text-xs font-bold uppercase tracking-widest opacity-60 mb-2">${w.pos}</span>
+                                <h2 class="text-6xl font-black korean-font mb-6">${w.ko}</h2>
+                                <p class="text-sm opacity-50 flex items-center gap-2"><i class="fas fa-sync-alt"></i> 點擊翻轉查看意思</p>
+                            </div>
+                            <div class="card-face card-back bg-white border-4 border-indigo-50 shadow-2xl text-slate-800">
+                                <h3 class="text-4xl font-black text-indigo-600 mb-4">${w.zh}</h3>
+                                <div class="w-12 h-1 bg-indigo-100 rounded-full mb-6"></div>
+                                <p class="text-lg font-medium text-slate-400 korean-font px-6 leading-relaxed">${w.guide || '無例句指引'}</p>
+                            </div>
                         </div>
-                        
-                        <div class="flashcard-back bg-white rounded-3xl p-8 flex flex-col items-center justify-center text-slate-800 shadow-xl border-2 border-slate-100">
-                            <h2 class="text-4xl font-bold mb-4">${word.zh}</h2>
-                            <div class="w-12 h-1 bg-blue-500 rounded-full mb-4"></div>
-                            <p class="text-slate-500 korean-font text-lg text-center">常見搭配：<br><span class="font-bold text-blue-600">${word.guide}</span></p>
-                        </div>
-                        
+                    </div>
+                    <div class="flex gap-4 w-full max-w-sm">
+                        <button onclick="playKo('${w.ko}')" class="flex-1 bg-slate-100 py-4 rounded-2xl font-bold hover:bg-slate-200 transition">發音</button>
+                        <button onclick="nextWord()" class="flex-[2] bg-emerald-500 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-emerald-600 transition">我學會了</button>
                     </div>
                 </div>
-
-                <div class="flex justify-center gap-4">
-                    <button onclick="window.markLearnedAndNext()" class="px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 font-bold text-white shadow-md shadow-emerald-200 transition text-lg w-full max-w-sm">
-                        <i class="fas fa-check mr-2"></i> 記住了，下一個
-                    </button>
-                </div>
             `;
-            window.playAudio(word.ko);
+            playKo(w.ko);
         }
 
-        window.toggleFlashcard = () => {
-            const card = document.getElementById('flashcard-inner');
-            card.classList.toggle('rotate-y-180');
-        };
+        function toggleFlip() {
+            const inner = document.getElementById('flash-inner');
+            if(inner) inner.classList.toggle('is-flipped');
+        }
 
-        window.markLearnedAndNext = () => {
-            const words = window.vocabData[currentLevel];
-            if (userProgress[currentLevel].index < words.length - 1) {
-                userProgress[currentLevel].index++;
-                saveProgressToCloud(); // 儲存進度到 Firebase
-                renderMode();
-            } else {
-                showToast("太棒了！你已經學完這個級別所有的字卡！");
-            }
-        };
-
-        /* =========================================
-           7. 測驗與拼寫 (沿用邏輯，增加進度保存)
-           ========================================= */
-        function renderMC(container, words) {
-            let idx = userProgress[currentLevel].index;
-            if (idx >= words.length) idx = 0;
-
-            const targetWord = words[idx];
-            let options = [targetWord];
-            while (options.length < 4 && options.length < words.length) {
+        function renderQuiz(container, words) {
+            let idx = state.progress[state.currentLevel];
+            if (idx >= words.length) return renderFlashcard(container, words);
+            
+            const target = words[idx];
+            let options = [target];
+            while(options.length < 4 && words.length > 4) {
                 let randomWord = words[Math.floor(Math.random() * words.length)];
-                if (!options.includes(randomWord)) options.push(randomWord);
+                if(!options.find(o => o.ko === randomWord.ko)) options.push(randomWord);
             }
             options.sort(() => Math.random() - 0.5);
 
-            let html = `
-                <div class="text-center mb-10">
-                    <p class="text-slate-500 font-medium mb-2">請選擇對應的韓文：</p>
-                    <h2 class="text-4xl font-bold text-slate-900">${targetWord.zh}</h2>
-                    <p class="text-sm text-slate-400 mt-2">${targetWord.guide}</p>
+            container.innerHTML = `
+                <div class="w-full animate-fade-in">
+                    <div class="text-center mb-10">
+                        <span class="text-indigo-500 font-bold text-sm block mb-2 uppercase tracking-tighter">選擇正確翻譯</span>
+                        <h2 class="text-5xl font-black korean-font text-slate-800">${target.ko}</h2>
+                        <p class="text-slate-400 mt-2 font-bold">${target.pos}</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="quiz-options">
+                        ${options.map(opt => `
+                            <button onclick="checkAnswer('${opt.ko}', '${target.ko}', this)" class="p-6 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-lg hover:border-indigo-500 hover:bg-indigo-50 transition-all">
+                                ${opt.zh}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="quiz-feedback" class="mt-8 text-center hidden"></div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="mc-options">
             `;
-
-            options.forEach((opt) => {
-                html += `
-                    <button onclick="window.checkMC('${opt.ko}', '${targetWord.ko}', this)" class="w-full p-5 bg-white border-2 border-slate-200 rounded-2xl text-xl font-bold text-slate-700 korean-font hover:border-blue-500 hover:bg-blue-50 transition-all">
-                        ${opt.ko}
-                    </button>
-                `;
-            });
-
-            html += `</div><div id="mc-feedback" class="mt-8 text-center hidden"></div>`;
-            container.innerHTML = html;
         }
 
-        window.checkMC = (selected, correct, btnElement) => {
-            const buttons = document.getElementById('mc-options').querySelectorAll('button');
-            buttons.forEach(b => b.disabled = true);
-            const feedback = document.getElementById('mc-feedback');
+        function checkAnswer(selected, correct, btn) {
+            const feedback = document.getElementById('quiz-feedback');
+            const btns = document.querySelectorAll('#quiz-options button');
+            btns.forEach(b => b.disabled = true);
+            
             feedback.classList.remove('hidden');
-
             if (selected === correct) {
-                userProgress[currentLevel].score += 10;
-                btnElement.classList.replace('border-slate-200', 'border-emerald-500');
-                btnElement.classList.add('bg-emerald-50', 'text-emerald-700');
-                window.playAudio(correct);
-                feedback.innerHTML = `<button onclick="window.markLearnedAndNext()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold">下一題</button>`;
+                btn.className = "p-6 bg-emerald-500 border-2 border-emerald-500 rounded-2xl font-bold text-lg text-white shadow-lg scale-105 transition-all";
+                feedback.innerHTML = `<button onclick="nextWord()" class="bg-indigo-600 text-white px-10 py-3 rounded-xl font-bold shadow-lg animate-bounce mt-4">正確！下一個單字</button>`;
+                playKo(correct);
             } else {
-                btnElement.classList.replace('border-slate-200', 'border-red-500');
-                buttons.forEach(b => {
-                    if(b.innerText.trim() === correct) b.classList.replace('border-slate-200', 'border-emerald-500');
-                });
-                feedback.innerHTML = `
-                    <p class="text-red-500 font-bold mb-4">答錯了，正確答案是：<span class="korean-font">${correct}</span></p>
-                    <button onclick="window.renderMode()" class="bg-slate-200 text-slate-700 px-8 py-3 rounded-xl font-bold">重試此題</button>
-                `;
+                btn.className = "p-6 bg-red-500 border-2 border-red-500 rounded-2xl font-bold text-lg text-white shadow-lg animate-shake";
+                feedback.innerHTML = `<p class="text-red-500 font-bold mb-4">答錯了，正解是：${correct}</p><button onclick="renderView()" class="text-slate-400 font-bold underline">重新嘗試</button>`;
             }
-        };
+        }
 
-        function renderSpelling(container, words) {
-            let idx = userProgress[currentLevel].index;
-            if (idx >= words.length) idx = 0;
-            const targetWord = words[idx];
+        function renderSpell(container, words) {
+            let idx = state.progress[state.currentLevel];
+            if (idx >= words.length) return renderFlashcard(container, words);
+            const target = words[idx];
 
             container.innerHTML = `
-                <div class="bg-slate-50 rounded-2xl p-8 text-center mb-8 border border-slate-100">
-                    <h2 class="text-3xl font-bold text-slate-800 mb-2">${targetWord.zh}</h2>
-                    <p class="text-slate-500 korean-font">搭配提示：<span class="text-blue-500 font-medium">${targetWord.guide}</span></p>
-                </div>
-                <div class="max-w-md mx-auto relative">
-                    <input type="text" id="spell-input" autocomplete="off" placeholder="請輸入韓文..." class="w-full text-center text-2xl korean-font font-bold p-4 bg-white border-2 border-slate-300 rounded-xl focus:outline-none focus:border-blue-500">
-                    <div id="spell-feedback" class="mt-6 text-center h-12"></div>
-                    <button id="spell-btn" onclick="window.checkSpelling('${targetWord.ko}')" class="w-full mt-4 bg-slate-800 text-white font-bold py-4 rounded-xl hover:bg-slate-900 transition">提交答案</button>
+                <div class="w-full max-w-md animate-fade-in">
+                    <div class="text-center mb-8">
+                        <span class="text-rose-500 font-bold text-sm block mb-2 uppercase tracking-tighter">拼寫大挑戰</span>
+                        <h2 class="text-4xl font-black text-slate-800 mb-2">${target.zh}</h2>
+                        <p class="text-slate-400 text-sm font-medium korean-font">${target.guide || '(無例句提示)'}</p>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <input type="text" id="spell-input" autofocus autocomplete="off" class="w-full p-5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-center text-3xl font-bold korean-font focus:border-indigo-500 focus:outline-none transition-all" placeholder="請輸入韓文">
+                            <button onclick="playKo('${target.ko}')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-indigo-500 transition">
+                                <i class="fas fa-volume-up text-xl"></i>
+                            </button>
+                        </div>
+                        <div id="spell-feedback" class="h-8 text-center font-bold"></div>
+                        <button onclick="checkSpell('${target.ko}')" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-black transition shadow-lg">檢查答案 (Enter)</button>
+                    </div>
                 </div>
             `;
-            setTimeout(() => document.getElementById('spell-input').focus(), 100);
+
             document.getElementById('spell-input').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    const btnText = document.getElementById('spell-btn').innerText;
-                    btnText === '下一題' ? window.markLearnedAndNext() : window.checkSpelling(targetWord.ko);
-                }
+                if(e.key === 'Enter') checkSpell(target.ko);
             });
         }
 
-        window.checkSpelling = (correct) => {
+        function checkSpell(correct) {
             const input = document.getElementById('spell-input');
             const feedback = document.getElementById('spell-feedback');
-            const btn = document.getElementById('spell-btn');
-            const userText = input.value.trim();
-            if(!userText) return;
+            if(!input || !input.value.trim()) return;
 
-            input.disabled = true;
-
-            if (userText === correct) {
-                userProgress[currentLevel].score += 20;
-                input.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-700');
-                feedback.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fas fa-check"></i> 完美！</span>`;
-                window.playAudio(correct);
-                btn.innerText = "下一題";
-                btn.classList.replace('bg-slate-800', 'bg-blue-600');
-                btn.onclick = window.markLearnedAndNext;
+            if (input.value.trim() === correct) {
+                feedback.className = "h-8 text-center font-bold text-emerald-500 animate-pulse";
+                feedback.innerText = "答對了！非常優秀！";
+                input.classList.replace('border-slate-200', 'border-emerald-500');
+                input.classList.add('bg-emerald-50');
+                playKo(correct);
+                setTimeout(nextWord, 1000);
             } else {
-                input.classList.add('border-red-500', 'bg-red-50', 'text-red-700', 'line-through');
-                feedback.innerHTML = `<span class="text-red-500 font-bold">正確：<span class="korean-font text-blue-600 ml-2">${correct}</span></span>`;
-                btn.innerText = "重新挑戰";
-                btn.onclick = window.renderMode;
+                feedback.className = "h-8 text-center font-bold text-red-500";
+                feedback.innerText = `拼錯囉，再試一次！`;
+                input.classList.add('animate-shake');
+                setTimeout(() => input.classList.remove('animate-shake'), 500);
             }
-        };
+        }
 
-        // 啟動 Firebase Auth
-        initAuth();
+        // --- 工具函數 ---
+        function nextWord() {
+            state.progress[state.currentLevel]++;
+            saveState();
+            renderView();
+        }
 
+        function resetProgress() {
+            if(confirm("確定要重置進度嗎？所有紀錄將消失。")) {
+                state.progress[state.currentLevel] = 0;
+                saveState();
+                renderView();
+            }
+        }
+
+        function playKo(text) {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'ko-KR';
+            u.rate = 0.9;
+            window.speechSynthesis.speak(u);
+        }
     </script>
 </body>
 </html>
