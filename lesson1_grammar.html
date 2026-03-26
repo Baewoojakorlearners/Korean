@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 1 基礎文法：主題助詞「은/는」</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+        
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .korean-font { font-family: 'Noto Sans KR', sans-serif; }
+
+        /* 動畫效果 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .animate-shake { animation: shake 0.3s ease-in-out 0s 2; }
+        
+        @keyframes pop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop { animation: pop 0.3s ease-out forwards; }
+
+        /* 測驗按鈕樣式 */
+        .quiz-btn {
+            transition: all 0.2s ease;
+        }
+        .quiz-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .quiz-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-20">
+
+    <header class="bg-indigo-700 text-white p-8 md:p-12 shadow-lg relative overflow-hidden">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <span class="bg-indigo-900/50 text-indigo-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4 inline-block">Lesson 1</span>
+            <h1 class="text-3xl md:text-5xl font-black tracking-tight mb-4">主題助詞 <span class="text-amber-300 korean-font">은/는</span></h1>
+            <p class="text-indigo-100 text-lg max-w-2xl">學習如何標示句子的主題、產生對比，以及接續話題的基礎文法規則。</p>
+        </div>
+        <div class="absolute right-0 top-0 opacity-10 text-[15rem] font-black korean-font transform translate-x-1/4 -translate-y-1/4 select-none">은/는</div>
+    </header>
+
+    <main class="max-w-4xl mx-auto p-4 md:p-6 mt-4 space-y-8">
+        
+        <section class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3 text-indigo-800">
+                <i class="fas fa-lightbulb text-amber-400"></i> 核心用法
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                    <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-black mb-3 text-lg">1</div>
+                    <h3 class="font-bold text-lg mb-2">標示主題</h3>
+                    <p class="text-slate-600 text-sm">用於主要名詞後面，告訴聽者「現在要談論的主題是這個」。</p>
+                </div>
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                    <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-black mb-3 text-lg">2</div>
+                    <h3 class="font-bold text-lg mb-2">對比與強調</h3>
+                    <p class="text-slate-600 text-sm">用於句型中產生強烈的對比感（例如：哥哥很高，但弟弟很矮）。</p>
+                </div>
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                    <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center font-black mb-3 text-lg">3</div>
+                    <h3 class="font-bold text-lg mb-2">再次提及</h3>
+                    <p class="text-slate-600 text-sm">當一個事物在對話中第二次出現時，通常會改用 은/는 來接續話題。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3 text-indigo-800">
+                <i class="fas fa-link text-indigo-400"></i> 接續規則 (받침)
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="border-2 border-indigo-100 rounded-2xl overflow-hidden">
+                    <div class="bg-indigo-50 p-4 text-center border-b-2 border-indigo-100">
+                        <h3 class="font-black text-lg text-indigo-800">有尾音 (子音結尾)</h3>
+                        <div class="text-3xl font-black korean-font text-indigo-600 mt-2">+ 은</div>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <span class="text-slate-500">서울 (首爾)</span>
+                            <span class="font-bold korean-font text-lg text-indigo-700">서울<span class="text-indigo-400">은</span></span>
+                        </div>
+                        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <span class="text-slate-500">동생 (弟弟/妹妹)</span>
+                            <span class="font-bold korean-font text-lg text-indigo-700">동생<span class="text-indigo-400">은</span></span>
+                        </div>
+                        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <span class="text-slate-500">생선 (魚)</span>
+                            <span class="font-bold korean-font text-lg text-indigo-700">생선<span class="text-indigo-400">은</span></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="border-2 border-emerald-100 rounded-2xl overflow-hidden">
+                    <div class="bg-emerald-50 p-4 text-center border-b-2 border-emerald-100">
+                        <h3 class="font-black text-lg text-emerald-800">無尾音 (母音結尾)</h3>
+                        <div class="text-3xl font-black korean-font text-emerald-600 mt-2">+ 는</div>
+                    </div>
+                    <div class="p-5 space-y-3">
+                        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <span class="text-slate-500">씨 (先生/小姐)</span>
+                            <span class="font-bold korean-font text-lg text-emerald-700">씨<span class="text-emerald-400">는</span></span>
+                        </div>
+                        <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <span class="text-slate-500">저 (我)</span>
+                            <span class="font-bold korean-font text-lg text-emerald-700">저<span class="text-emerald-400">는</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-slate-800 rounded-3xl p-6 md:p-8 shadow-lg text-white relative overflow-hidden">
+            <div class="relative z-10">
+                <h2 class="text-xl font-bold mb-2 flex items-center gap-3">
+                    <i class="fas fa-magic text-amber-400"></i> 單字尾音自動判斷器
+                </h2>
+                <p class="text-slate-400 text-sm mb-6">不確定該接哪一個嗎？輸入韓文單字，程式會自動為您計算！</p>
+                <div class="flex gap-3 max-w-md">
+                    <input type="text" id="word-input" placeholder="輸入韓文單字 (例: 학생)" class="flex-1 bg-slate-700 border border-slate-600 text-white px-4 py-3 rounded-xl focus:outline-none focus:border-indigo-400 korean-font text-lg">
+                    <button onclick="checkBatchim()" class="bg-indigo-500 hover:bg-indigo-600 font-bold px-6 py-3 rounded-xl transition-colors">檢查</button>
+                </div>
+                <div id="batchim-result" class="mt-4 h-12 flex items-center text-lg font-bold korean-font"></div>
+            </div>
+            <i class="fas fa-keyboard absolute right-4 bottom-4 text-7xl opacity-5"></i>
+        </section>
+
+        <section class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
+            <div class="flex justify-between items-end mb-6">
+                <h2 class="text-2xl font-bold flex items-center gap-3 text-indigo-800">
+                    <i class="fas fa-pencil-alt text-rose-400"></i> 實戰練習
+                </h2>
+                <button onclick="resetQuiz()" class="text-sm font-bold text-slate-400 hover:text-indigo-600 transition">重新測驗</button>
+            </div>
+            
+            <div class="space-y-6" id="quiz-container">
+                </div>
+        </section>
+
+    </main>
+
+    <script>
+        // --- 1. 互動測驗邏輯 ---
+        const questions = [
+            {
+                id: 1,
+                parts: ["서울 ", " 한국의 수도 입니다."],
+                correct: "은",
+                translation: "首爾是韓國的首都。"
+            },
+            {
+                id: 2,
+                parts: ["티부 씨 ", " 선생님입니다."],
+                correct: "는",
+                translation: "Tibu 先生是老師。"
+            },
+            {
+                id: 3,
+                parts: ["동생 ", " 키가 큽니다. 저 ", " 키가 작습니다."],
+                correct: ["은", "는"],
+                translation: "弟弟/妹妹很高。我很矮。 (對比用法)"
+            },
+            {
+                id: 4,
+                parts: ["고기를 좋아합니다. 생선 ", " 싫어 합니다."],
+                correct: "은",
+                translation: "喜歡肉。討厭魚。 (對比用法)"
+            },
+            {
+                id: 5,
+                parts: ["이것이 뭐예요? 그것 ", " 연필이에요."],
+                correct: "은",
+                translation: "這是什麼？那個是鉛筆。 (再次提及)"
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            questions.forEach((q, qIndex) => {
+                let html = `<div class="p-5 md:p-6 bg-slate-50 rounded-2xl border-2 border-slate-100 hover:border-indigo-100 transition-colors">
+                                <div class="text-sm font-black text-indigo-300 mb-2 uppercase tracking-widest">Question ${q.id}</div>
+                                <div class="text-2xl md:text-3xl font-black korean-font text-slate-800 leading-relaxed mb-4 flex flex-wrap items-center gap-2">`;
+                
+                // 處理單格或多格填空
+                const isArray = Array.isArray(q.correct);
+                const answers = isArray ? q.correct : [q.correct];
+
+                q.parts.forEach((part, pIndex) => {
+                    html += `<span class="align-middle">${part}</span>`;
+                    
+                    if (pIndex < q.parts.length - 1) {
+                        const correctAns = answers[pIndex];
+                        html += `
+                            <div class="inline-flex gap-1 align-middle" id="blank-${qIndex}-${pIndex}">
+                                <button class="quiz-btn bg-white border-2 border-slate-200 text-slate-500 font-bold px-4 py-2 rounded-xl text-lg hover:border-indigo-400 hover:text-indigo-600 focus:outline-none" onclick="checkAnswer(this, '은', '${correctAns}', ${qIndex}, ${pIndex})">은</button>
+                                <button class="quiz-btn bg-white border-2 border-slate-200 text-slate-500 font-bold px-4 py-2 rounded-xl text-lg hover:border-emerald-400 hover:text-emerald-600 focus:outline-none" onclick="checkAnswer(this, '는', '${correctAns}', ${qIndex}, ${pIndex})">는</button>
+                            </div>
+                        `;
+                    }
+                });
+
+                html += `</div>
+                         <div class="text-sm text-slate-500 font-medium bg-white px-4 py-3 rounded-xl shadow-sm border border-slate-100 flex items-start gap-2">
+                             <i class="fas fa-language text-slate-400 mt-1"></i> ${q.translation}
+                         </div>
+                     </div>`;
+                
+                container.innerHTML += html;
+            });
+        }
+
+        // 檢查答案邏輯
+        function checkAnswer(btn, selected, correct, qIndex, pIndex) {
+            const parent = document.getElementById(`blank-${qIndex}-${pIndex}`);
+            const buttons = parent.querySelectorAll('button');
+            
+            // 停用按鈕防止重複點擊
+            buttons.forEach(b => b.disabled = true);
+
+            if (selected === correct) {
+                // 答對了 (轉換成綠色標籤)
+                parent.innerHTML = `
+                    <span class="inline-flex items-center gap-1 bg-emerald-100 border-2 border-emerald-400 text-emerald-700 font-black px-4 py-1.5 rounded-xl text-2xl animate-pop shadow-sm">
+                        ${selected} <i class="fas fa-check-circle text-emerald-500 text-sm ml-1"></i>
+                    </span>
+                `;
+            } else {
+                // 答錯了 (紅色標籤，並震動)
+                parent.classList.add('animate-shake');
+                const originalHtml = parent.innerHTML; // 保存原本的 HTML
+                
+                parent.innerHTML = `
+                    <span class="inline-flex items-center gap-1 bg-rose-100 border-2 border-rose-400 text-rose-700 font-black px-4 py-1.5 rounded-xl text-2xl shadow-sm">
+                        ${selected} <i class="fas fa-times-circle text-rose-500 text-sm ml-1"></i>
+                    </span>
+                `;
+
+                // 1 秒後恢復原狀讓使用者重試
+                setTimeout(() => {
+                    parent.classList.remove('animate-shake');
+                    parent.innerHTML = originalHtml;
+                    // 重新綁定事件時，按鈕會自動恢復可用狀態
+                }, 1200);
+            }
+        }
+
+        function resetQuiz() {
+            renderQuiz();
+        }
+
+        // --- 2. 尾音判斷器邏輯 (Unicode 公式) ---
+        function checkBatchim() {
+            const input = document.getElementById('word-input').value.trim();
+            const resultDiv = document.getElementById('batchim-result');
+            
+            if (!input) {
+                resultDiv.innerHTML = `<span class="text-rose-400"><i class="fas fa-exclamation-circle"></i> 請輸入韓文單字</span>`;
+                return;
+            }
+
+            // 取最後一個字元
+            const lastChar = input.charAt(input.length - 1);
+            const charCode = lastChar.charCodeAt(0);
+
+            // 判斷是否為韓文音節範圍 (가: 0xAC00 ~ 힣: 0xD7A3)
+            if (charCode >= 0xAC00 && charCode <= 0xD7A3) {
+                // 公式：(Unicode碼 - 起始碼) % 28。餘數 > 0 代表有尾音
+                const hasBatchim = (charCode - 0xAC00) % 28 > 0;
+                
+                if (hasBatchim) {
+                    resultDiv.innerHTML = `
+                        <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 px-4 py-2 rounded-xl animate-pop flex items-center gap-2">
+                            「${lastChar}」有尾音 <i class="fas fa-arrow-right text-sm"></i> 接 <span class="text-2xl font-black text-white ml-1">은</span>
+                        </span>`;
+                } else {
+                    resultDiv.innerHTML = `
+                        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-4 py-2 rounded-xl animate-pop flex items-center gap-2">
+                            「${lastChar}」無尾音 <i class="fas fa-arrow-right text-sm"></i> 接 <span class="text-2xl font-black text-white ml-1">는</span>
+                        </span>`;
+                }
+            } else {
+                resultDiv.innerHTML = `<span class="text-rose-400"><i class="fas fa-times-circle"></i> 最後一個字似乎不是韓文喔！</span>`;
+            }
+        }
+
+        // 綁定 Enter 鍵觸發判斷器
+        document.getElementById('word-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkBatchim();
+            }
+        });
+
+        // 頁面載入時初始化測驗
+        window.onload = renderQuiz;
+    </script>
+</body>
+</html>
