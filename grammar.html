@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>韓國語文法與實戰學習</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+        
+        body { 
+            font-family: 'Noto Sans TC', sans-serif; 
+            background-color: #f0fdf4;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .korean-font { font-family: 'Noto Sans KR', sans-serif; }
+
+        /* 動畫與過渡 */
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .pop { animation: pop 0.3s ease-out forwards; }
+        @keyframes pop {
+            0% { transform: scale(0.9); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* 自訂滾動條 */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        /* 拼圖按鈕樣式 */
+        .puzzle-piece {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .puzzle-piece:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        
+        /* 連線配對樣式 */
+        .match-item { transition: all 0.2s; border: 2px solid transparent; }
+        .match-item.selected { border-color: #6366f1; background-color: #e0e7ff; transform: scale(1.02); }
+        .match-item.matched { background-color: #d1fae5; border-color: #10b981; color: #047857; pointer-events: none; opacity: 0.7; }
+        .match-item.error { border-color: #f43f5e; background-color: #ffe4e6; color: #e11d48; }
+
+        .tab-btn.active {
+            border-bottom: 3px solid #4f46e5;
+            color: #4f46e5;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col">
+
+    <!-- 導航列 -->
+    <nav class="bg-emerald-600 text-white p-4 shadow-md sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <a href="https://baewoojakorlearners.github.io/Korean/" class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition group" title="回到主頁">
+                <div class="bg-white/20 p-2 rounded-lg group-hover:bg-white/30 transition duration-300">
+                    <i class="fas fa-home text-xl"></i>
+                </div>
+                <h1 class="font-black text-xl tracking-tight">文法與實戰</h1>
+            </a>
+            
+            <!-- 章節選擇器 -->
+            <div class="relative">
+                <select id="lesson-selector" onchange="changeLesson(this.value)" class="appearance-none bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2 pl-4 pr-10 rounded-xl outline-none cursor-pointer border border-emerald-500 shadow-sm transition">
+                    <!-- 由 JS 動態生成 -->
+                </select>
+                <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-sm pointer-events-none"></i>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-4xl w-full mx-auto p-4 md:p-6 pb-10 flex flex-col h-full">
+        
+        <!-- 模組標籤頁切換 -->
+        <div class="flex overflow-x-auto custom-scrollbar bg-white rounded-t-2xl shadow-sm border-b border-slate-200">
+            <button onclick="switchTab('theory')" id="tab-theory" class="tab-btn active px-6 py-4 whitespace-nowrap text-slate-500 hover:bg-slate-50 transition flex items-center gap-2">
+                <i class="fas fa-book-open"></i> 理論學習
+            </button>
+            <button onclick="switchTab('matching')" id="tab-matching" class="tab-btn px-6 py-4 whitespace-nowrap text-slate-500 hover:bg-slate-50 transition flex items-center gap-2">
+                <i class="fas fa-link"></i> 配對連線
+            </button>
+            <button onclick="switchTab('puzzle')" id="tab-puzzle" class="tab-btn px-6 py-4 whitespace-nowrap text-slate-500 hover:bg-slate-50 transition flex items-center gap-2">
+                <i class="fas fa-puzzle-piece"></i> 句子重組
+            </button>
+            <button onclick="switchTab('mc')" id="tab-mc" class="tab-btn px-6 py-4 whitespace-nowrap text-slate-500 hover:bg-slate-50 transition flex items-center gap-2">
+                <i class="fas fa-list-ul"></i> 選擇題
+            </button>
+            <button onclick="switchTab('typing')" id="tab-typing" class="tab-btn px-6 py-4 whitespace-nowrap text-slate-500 hover:bg-slate-50 transition flex items-center gap-2">
+                <i class="fas fa-keyboard"></i> 輸入測驗
+            </button>
+        </div>
+
+        <!-- 內容顯示區 -->
+        <div id="content-area" class="bg-white p-6 md:p-8 rounded-b-2xl shadow-sm flex-1 min-h-[500px]">
+            <!-- 動態注入內容 -->
+        </div>
+
+    </main>
+
+    <!-- 提示框 -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800/90 text-white px-6 py-3 rounded-2xl shadow-xl opacity-0 transition-opacity duration-300 pointer-events-none z-[100] font-bold"></div>
+
+    <script>
+        /* =====================================================================
+           🌟 課程資料庫 (未來更新方法) 🌟
+           日後想加新章節，只需要在這個陣列 (COURSE_DATA) 中複製貼上一組新的 JSON 物件。
+           不需要去改動下方的任何邏輯程式碼！
+        ===================================================================== */
+        const COURSE_DATA = [
+            {
+                id: "lesson_1",
+                title: "Lesson 1: 打招呼與 은/는",
+                // 1. 理論教學區
+                theory: [
+                    {
+                        title: "1. 打招呼與自我介紹 (인사)",
+                        content: `
+                            <ul class="list-disc list-inside space-y-2 text-lg">
+                                <li><span class="font-bold korean-font text-indigo-600">안녕하세요 / 안녕하십니까?</span> : 你好</li>
+                                <li><span class="font-bold korean-font text-indigo-600">저는 ___ 입니다. / 저는 ___이라고 합니다.</span> : 我是 ___。</li>
+                            </ul>
+                            <div class="mt-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                                💡 <strong>稱呼用語：</strong> <br>
+                                <span class="korean-font font-bold">선생님</span> (老師)、<span class="korean-font font-bold">씨</span> (先生/小姐)、<span class="korean-font font-bold">님</span> (尊稱)
+                            </div>
+                        `
+                    },
+                    {
+                        title: "2. 主題助詞 (은/는)",
+                        content: `
+                            <p class="mb-4">用於主要名詞後面，標示句子的「主題」，或表示「對比/強調」及「再次提及」。</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-center">
+                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                                    <h4 class="font-bold text-blue-800 mb-2">有尾音 (子音結尾)</h4>
+                                    <p class="text-3xl font-black korean-font text-blue-600">+ 은</p>
+                                    <p class="mt-2 text-slate-500 text-sm">例: 서울 (首爾) <i class="fas fa-arrow-right"></i> <strong class="korean-font text-black">서울은</strong></p>
+                                </div>
+                                <div class="bg-rose-50 p-4 rounded-xl border border-rose-200">
+                                    <h4 class="font-bold text-rose-800 mb-2">無尾音 (母音結尾)</h4>
+                                    <p class="text-3xl font-black korean-font text-rose-600">+ 는</p>
+                                    <p class="mt-2 text-slate-500 text-sm">例: 저 (我) <i class="fas fa-arrow-right"></i> <strong class="korean-font text-black">저는</strong></p>
+                                </div>
+                            </div>
+                            <div class="space-y-2 bg-slate-50 p-4 rounded-xl text-sm">
+                                <p><span class="badge bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs">對比</span> 동생<strong class="text-indigo-600">은</strong> 키가 큽니다. 저<strong class="text-indigo-600">는</strong> 키가 작습니다. (弟弟很高，而我很矮。)</p>
+                                <p><span class="badge bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs">再次提及</span> 이것이 뭐예요? 그것<strong class="text-indigo-600">은</strong> 연필이에요. (這是什麼？那個是鉛筆。)</p>
+                            </div>
+                        `
+                    }
+                ],
+                // 2. 配對連線題
+                matching: [
+                    { left: "서울 (有尾音)", right: "은" },
+                    { left: "동생 (有尾音)", right: "은" },
+                    { left: "저 (無尾音)", right: "는" },
+                    { left: "티부 씨 (無尾音)", right: "는" }
+                ],
+                // 3. 句子重組 (拼圖)
+                puzzle: [
+                    { sentence: ["서울은", "한국의", "수도", "입니다."], translation: "首爾是韓國的首都。" },
+                    { sentence: ["저는", "티부", "입니다."], translation: "我是Tibu。" }
+                ],
+                // 4. 選擇題
+                mc: [
+                    { 
+                        question: "고기를 좋아합니다. 생선(___) 싫어 합니다.", 
+                        options: ["은", "는", "이", "가"], 
+                        answer: "은", 
+                        translation: "喜歡肉。討厭魚。 (對比)"
+                    },
+                    { 
+                        question: "이것이 뭐예요? 그것(___) 연필이에요.", 
+                        options: ["은", "는", "을", "를"], 
+                        answer: "은", 
+                        translation: "這是什麼？那個是鉛筆。"
+                    }
+                ],
+                // 5. 填空題 (鍵盤輸入)
+                typing: [
+                    { question: "티부 씨(___) 선생님입니다.", answer: "는", hint: "無尾音接什麼？", translation: "Tibu先生是老師。" },
+                    { question: "동생(___) 키가 큽니다.", answer: "은", hint: "有尾音接什麼？", translation: "弟弟很高。" }
+                ]
+            },
+            // ======== 你可以在這裡加入 Lesson 2 ========
+            {
+                id: "lesson_2",
+                title: "Lesson 2: 預留章節 (測試用)",
+                theory: [{ title: "第二課", content: "這裡是第二課的內容，你可以依照上面的格式填入新文法。" }],
+                matching: [{ left: "測試左", right: "測試右" }],
+                puzzle: [{ sentence: ["이것은", "테스트", "입니다."], translation: "這是測試。" }],
+                mc: [{ question: "1+1=?", options: ["1", "2", "3"], answer: "2", translation: "數學" }],
+                typing: [{ question: "蘋果的韓文是 ___", answer: "사과", hint: "s..." }]
+            }
+        ];
+
+        /* =====================================================================
+           內部邏輯 (除非改版面，否則不用動)
+        ===================================================================== */
+        let currentLessonId = COURSE_DATA[0].id;
+        let currentTab = 'theory';
+
+        // 狀態暫存
+        let matchState = { selectedLeft: null, selectedRight: null, matchedPairs: [] };
+        let puzzleState = { currentQ: 0, pieces: [], answer: [] };
+        let typingState = { currentQ: 0 };
+
+        window.onload = () => {
+            initLessonSelector();
+            renderContent();
+        };
+
+        // 初始化選單
+        function initLessonSelector() {
+            const selector = document.getElementById('lesson-selector');
+            selector.innerHTML = COURSE_DATA.map(lesson => 
+                `<option value="${lesson.id}">${lesson.title}</option>`
+            ).join('');
+        }
+
+        // 切換章節
+        function changeLesson(lessonId) {
+            currentLessonId = lessonId;
+            resetStates();
+            renderContent();
+        }
+
+        // 切換分籤 (Tab)
+        function switchTab(tabId) {
+            currentTab = tabId;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            resetStates();
+            renderContent();
+        }
+
+        function resetStates() {
+            matchState = { selectedLeft: null, selectedRight: null, matchedPairs: [] };
+            puzzleState = { currentQ: 0, pieces: [], answer: [] };
+            typingState = { currentQ: 0 };
+        }
+
+        // 取得當前課程資料
+        function getCurData() {
+            return COURSE_DATA.find(l => l.id === currentLessonId);
+        }
+
+        // 主渲染函數
+        function renderContent() {
+            const container = document.getElementById('content-area');
+            const data = getCurData();
+            
+            container.innerHTML = ''; // 清空
+            container.className = "bg-white p-6 md:p-8 rounded-b-2xl shadow-sm flex-1 min-h-[500px] fade-in";
+
+            if(currentTab === 'theory') renderTheory(container, data.theory);
+            if(currentTab === 'matching') renderMatching(container, data.matching);
+            if(currentTab === 'puzzle') renderPuzzle(container, data.puzzle);
+            if(currentTab === 'mc') renderMC(container, data.mc);
+            if(currentTab === 'typing') renderTyping(container, data.typing);
+        }
+
+        // --- 1. 理論渲染 ---
+        function renderTheory(container, theoryData) {
+            if(!theoryData || theoryData.length===0) return container.innerHTML = "<p>無資料</p>";
+            let html = `<div class="space-y-8">`;
+            theoryData.forEach(item => {
+                html += `
+                    <div class="bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm">
+                        <h2 class="text-2xl font-black text-emerald-700 mb-4 border-b-2 border-emerald-100 pb-2">${item.title}</h2>
+                        <div class="text-slate-700 leading-relaxed">${item.content}</div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // --- 2. 連線配對 (Matching) ---
+        function renderMatching(container, matchingData) {
+            if(!matchingData || matchingData.length===0) return container.innerHTML = "<p>無資料</p>";
+            
+            // 如果還沒初始化，就隨機打亂左邊和右邊
+            if(matchState.matchedPairs.length === 0 && !matchState.lefts) {
+                let lefts = matchingData.map((d, i) => ({ text: d.left, matchId: i, type: 'left' }));
+                let rights = matchingData.map((d, i) => ({ text: d.right, matchId: i, type: 'right' }));
+                matchState.lefts = lefts.sort(() => Math.random() - 0.5);
+                matchState.rights = rights.sort(() => Math.random() - 0.5);
+            }
+
+            // 完成檢查
+            if(matchState.matchedPairs.length === matchingData.length) {
+                return container.innerHTML = `
+                    <div class="text-center py-20 pop">
+                        <i class="fas fa-check-circle text-6xl text-emerald-500 mb-4"></i>
+                        <h2 class="text-3xl font-black">全部配對成功！</h2>
+                        <button onclick="resetStates(); renderContent();" class="mt-6 bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700">再玩一次</button>
+                    </div>
+                `;
+            }
+
+            let html = `
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-black text-slate-800">連連看</h2>
+                    <p class="text-slate-500">請點選左邊的詞，再點選右邊對應的助詞。</p>
+                </div>
+                <div class="flex justify-between gap-4 max-w-2xl mx-auto">
+                    <!-- 左側 -->
+                    <div class="w-1/2 space-y-3" id="match-left">
+                        ${matchState.lefts.map(item => `
+                            <button onclick="handleMatchClick(${item.matchId}, 'left', this)" 
+                                    class="match-item w-full p-4 rounded-xl bg-slate-50 font-bold text-lg text-slate-700 shadow-sm ${matchState.matchedPairs.includes(item.matchId) ? 'matched' : ''}">
+                                ${item.text}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <!-- 右側 -->
+                    <div class="w-1/2 space-y-3" id="match-right">
+                        ${matchState.rights.map(item => `
+                            <button onclick="handleMatchClick(${item.matchId}, 'right', this)" 
+                                    class="match-item w-full p-4 rounded-xl bg-slate-50 font-bold text-lg text-slate-700 korean-font shadow-sm ${matchState.matchedPairs.includes(item.matchId) ? 'matched' : ''}">
+                                ${item.text}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        window.handleMatchClick = function(matchId, type, btnElement) {
+            if(btnElement.classList.contains('matched')) return;
+
+            // 視覺更新
+            document.querySelectorAll(`#match-${type} .match-item`).forEach(b => b.classList.remove('selected', 'error'));
+            btnElement.classList.add('selected');
+
+            if(type === 'left') matchState.selectedLeft = { id: matchId, element: btnElement };
+            if(type === 'right') matchState.selectedRight = { id: matchId, element: btnElement };
+
+            // 判斷邏輯
+            if(matchState.selectedLeft && matchState.selectedRight) {
+                if(matchState.selectedLeft.id === matchState.selectedRight.id) {
+                    // 答對
+                    matchState.matchedPairs.push(matchId);
+                    showToast("配對成功！");
+                    matchState.selectedLeft = null; matchState.selectedRight = null;
+                    setTimeout(renderContent, 300);
+                } else {
+                    // 答錯
+                    matchState.selectedLeft.element.classList.add('error', 'shake');
+                    matchState.selectedRight.element.classList.add('error', 'shake');
+                    setTimeout(() => {
+                        matchState.selectedLeft.element.classList.remove('selected', 'error', 'shake');
+                        matchState.selectedRight.element.classList.remove('selected', 'error', 'shake');
+                        matchState.selectedLeft = null; matchState.selectedRight = null;
+                    }, 500);
+                }
+            }
+        };
+
+        // --- 3. 句子重組 (Puzzle) ---
+        function renderPuzzle(container, puzzleData) {
+            if(!puzzleData || puzzleData.length===0) return container.innerHTML = "<p>無資料</p>";
+            
+            let qIndex = puzzleState.currentQ;
+            if(qIndex >= puzzleData.length) {
+                return container.innerHTML = `
+                    <div class="text-center py-20 pop">
+                        <i class="fas fa-puzzle-piece text-6xl text-emerald-500 mb-4"></i>
+                        <h2 class="text-3xl font-black">完成所有重組！</h2>
+                        <button onclick="resetStates(); renderContent();" class="mt-6 bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700">再玩一次</button>
+                    </div>`;
+            }
+
+            let currentItem = puzzleData[qIndex];
+            
+            // 初始化打亂碎片
+            if(puzzleState.pieces.length === 0 && puzzleState.answer.length === 0) {
+                puzzleState.pieces = [...currentItem.sentence].sort(() => Math.random() - 0.5);
+            }
+
+            container.innerHTML = `
+                <div class="text-center mb-8">
+                    <span class="text-xs font-black text-indigo-500 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full">Question ${qIndex+1} / ${puzzleData.length}</span>
+                    <h2 class="text-2xl font-bold mt-4 text-slate-700">請重組句子</h2>
+                    <p class="text-slate-500 mt-2"><i class="fas fa-language"></i> 目標：${currentItem.translation}</p>
+                </div>
+
+                <!-- 作答區 -->
+                <div class="min-h-[80px] bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-wrap gap-2 items-center mb-8" id="puzzle-answer-box">
+                    ${puzzleState.answer.length === 0 ? '<span class="text-slate-400 mx-auto">點擊下方單字放入此處</span>' : 
+                      puzzleState.answer.map((word, i) => `
+                        <div onclick="puzzleRemove(${i})" class="puzzle-piece bg-indigo-600 text-white korean-font font-bold px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
+                            ${word} <i class="fas fa-times text-xs opacity-50 hover:opacity-100"></i>
+                        </div>
+                      `).join('')}
+                </div>
+
+                <!-- 碎片區 -->
+                <div class="flex flex-wrap gap-3 justify-center border-t border-slate-100 pt-8" id="puzzle-pieces-box">
+                    ${puzzleState.pieces.map((word, i) => `
+                        <button onclick="puzzleAdd(${i})" class="puzzle-piece bg-white border-2 border-slate-200 text-slate-700 korean-font font-bold px-5 py-3 rounded-xl shadow-sm hover:border-indigo-400 hover:text-indigo-600">
+                            ${word}
+                        </button>
+                    `).join('')}
+                </div>
+                
+                <div class="mt-8 flex justify-center gap-4">
+                    <button onclick="puzzleResetCurrent()" class="text-slate-500 font-bold hover:text-rose-500 px-4 py-2"><i class="fas fa-undo"></i> 重置</button>
+                    <button onclick="puzzleSubmit()" class="bg-slate-800 text-white font-bold px-8 py-3 rounded-xl hover:bg-black shadow-md">提交答案</button>
+                </div>
+            `;
+        }
+
+        window.puzzleAdd = function(index) {
+            let word = puzzleState.pieces.splice(index, 1)[0];
+            puzzleState.answer.push(word);
+            renderContent();
+        };
+
+        window.puzzleRemove = function(index) {
+            let word = puzzleState.answer.splice(index, 1)[0];
+            puzzleState.pieces.push(word);
+            renderContent();
+        };
+
+        window.puzzleResetCurrent = function() {
+            puzzleState.pieces = [...puzzleState.pieces, ...puzzleState.answer].sort(() => Math.random() - 0.5);
+            puzzleState.answer = [];
+            renderContent();
+        };
+
+        window.puzzleSubmit = function() {
+            const data = getCurData().puzzle;
+            const correctArr = data[puzzleState.currentQ].sentence;
+            
+            if(puzzleState.answer.join('') === correctArr.join('')) {
+                showToast("正確！");
+                document.getElementById('puzzle-answer-box').classList.add('bg-emerald-100', 'border-emerald-500');
+                setTimeout(() => {
+                    puzzleState.currentQ++;
+                    puzzleState.pieces = [];
+                    puzzleState.answer = [];
+                    renderContent();
+                }, 1000);
+            } else {
+                document.getElementById('puzzle-answer-box').classList.add('shake', 'border-rose-400', 'bg-rose-50');
+                setTimeout(() => {
+                    document.getElementById('puzzle-answer-box').classList.remove('shake', 'border-rose-400', 'bg-rose-50');
+                }, 500);
+            }
+        };
+
+        // --- 4. 選擇題 (MC) ---
+        function renderMC(container, mcData) {
+            if(!mcData || mcData.length===0) return container.innerHTML = "<p>無資料</p>";
+            let html = `<div class="space-y-8">`;
+            mcData.forEach((q, i) => {
+                html += `
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                        <div class="text-xs font-bold text-indigo-500 mb-2">Q${i+1}.</div>
+                        <h3 class="text-xl font-bold korean-font mb-2 text-slate-800">${q.question.replace('___', '_____')}</h3>
+                        <p class="text-slate-500 text-sm mb-6"><i class="fas fa-language"></i> ${q.translation}</p>
+                        
+                        <div class="grid grid-cols-2 gap-3" id="mc-options-${i}">
+                            ${q.options.map(opt => `
+                                <button onclick="handleMCClick(this, '${opt}', '${q.answer}', ${i})" class="bg-white border-2 border-slate-200 p-4 rounded-xl font-bold korean-font text-lg hover:border-indigo-400 hover:bg-indigo-50 transition active:scale-95 text-slate-700">
+                                    ${opt}
+                                </button>
+                            `).join('')}
+                        </div>
+                        <div id="mc-feedback-${i}" class="mt-4 font-bold text-sm h-5 hidden"></div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        window.handleMCClick = function(btn, selected, correct, qIndex) {
+            const parent = document.getElementById(`mc-options-${qIndex}`);
+            const feedback = document.getElementById(`mc-feedback-${qIndex}`);
+            
+            parent.querySelectorAll('button').forEach(b => b.disabled = true);
+            feedback.classList.remove('hidden');
+
+            if(selected === correct) {
+                btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600', 'pop');
+                btn.classList.remove('bg-white', 'text-slate-700');
+                feedback.innerHTML = `<span class="text-emerald-600"><i class="fas fa-check"></i> 答對了！</span>`;
+            } else {
+                btn.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-600', 'shake');
+                feedback.innerHTML = `<span class="text-rose-500"><i class="fas fa-times"></i> 答錯了，正解為: ${correct}</span>`;
+            }
+        }
+
+        // --- 5. 填空輸入題 (Typing) ---
+        function renderTyping(container, typingData) {
+            if(!typingData || typingData.length===0) return container.innerHTML = "<p>無資料</p>";
+            let qIndex = typingState.currentQ;
+            
+            if(qIndex >= typingData.length) {
+                return container.innerHTML = `
+                    <div class="text-center py-20 pop">
+                        <i class="fas fa-keyboard text-6xl text-emerald-500 mb-4"></i>
+                        <h2 class="text-3xl font-black">完成所有輸入測驗！</h2>
+                        <button onclick="resetStates(); renderContent();" class="mt-6 bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700">再測一次</button>
+                    </div>`;
+            }
+
+            let q = typingData[qIndex];
+            
+            // 將題目切開，放入 input 框
+            let parts = q.question.split('___');
+
+            container.innerHTML = `
+                <div class="max-w-xl mx-auto py-10">
+                    <div class="text-center mb-8">
+                        <span class="text-xs font-black text-indigo-500 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full">Question ${qIndex+1} / ${typingData.length}</span>
+                        <p class="text-slate-500 mt-4"><i class="fas fa-language"></i> ${q.translation}</p>
+                        ${q.hint ? `<p class="text-amber-500 text-xs mt-2"><i class="fas fa-lightbulb"></i> 提示: ${q.hint}</p>` : ''}
+                    </div>
+                    
+                    <div class="text-2xl md:text-3xl font-black korean-font text-center text-slate-800 leading-relaxed mb-8 flex flex-wrap items-center justify-center gap-2">
+                        <span>${parts[0]}</span>
+                        <input type="text" id="type-input" autocomplete="off" class="w-24 border-b-4 border-slate-300 bg-slate-50 text-indigo-600 text-center focus:outline-none focus:border-indigo-500 focus:bg-white transition-colors px-2 py-1 rounded-t-lg">
+                        <span>${parts[1] || ''}</span>
+                    </div>
+
+                    <div id="type-feedback" class="text-center h-8 font-bold mb-6"></div>
+
+                    <button onclick="checkTyping('${q.answer}')" id="btn-type-submit" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl hover:bg-black active:scale-95 transition shadow-lg tracking-widest">
+                        提交答案 (Enter)
+                    </button>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const input = document.getElementById('type-input');
+                if(input) {
+                    input.focus();
+                    input.addEventListener('keypress', (e) => { if(e.key === 'Enter') checkTyping(q.answer); });
+                }
+            }, 100);
+        }
+
+        window.checkTyping = function(correctAnswer) {
+            const input = document.getElementById('type-input');
+            const feedback = document.getElementById('type-feedback');
+            const val = input.value.trim();
+
+            if(!val) return;
+
+            if(val === correctAnswer) {
+                input.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-700');
+                input.classList.remove('border-slate-300');
+                feedback.innerHTML = `<span class="text-emerald-500 pop inline-block"><i class="fas fa-check-circle"></i> 正確無誤！</span>`;
+                input.disabled = true;
+                
+                setTimeout(() => {
+                    typingState.currentQ++;
+                    renderContent();
+                }, 1000);
+            } else {
+                input.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-600', 'shake');
+                feedback.innerHTML = `<span class="text-rose-500"><i class="fas fa-times-circle"></i> 拼字錯誤，請再試一次。</span>`;
+                setTimeout(() => {
+                    input.classList.remove('shake');
+                }, 400);
+            }
+        }
+
+        // 共用工具
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.opacity = '1';
+            setTimeout(() => { t.style.opacity = '0'; }, 2000);
+        }
+    </script>
+</body>
+</html>
