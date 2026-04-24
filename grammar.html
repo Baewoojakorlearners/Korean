@@ -1,9 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>韓國語文法與實戰學習</title>
+    <title>韓國語 40 核心文法</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -11,13 +12,13 @@
         
         body { 
             font-family: 'Noto Sans TC', sans-serif; 
-            background-color: #f0fdf4;
+            background-color: #f8fafc;
             -webkit-tap-highlight-color: transparent;
         }
 
         .korean-font { font-family: 'Noto Sans KR', sans-serif; }
 
-        /* 動畫與過渡 */
+        /* 動畫 */
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -39,46 +40,51 @@
             100% { transform: scale(1); }
         }
 
-        /* 自訂滾動條 */
+        /* 滾動條與按鈕 */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
-        /* 拼圖按鈕樣式 */
-        .puzzle-piece {
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+        .puzzle-piece { cursor: pointer; transition: all 0.2s; }
         .puzzle-piece:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         
-        /* 連線配對樣式 */
         .match-item { transition: all 0.2s; border: 2px solid transparent; }
-        .match-item.selected { border-color: #6366f1; background-color: #e0e7ff; transform: scale(1.02); }
+        .match-item.selected { border-color: #4f46e5; background-color: #e0e7ff; transform: scale(1.02); }
         .match-item.matched { background-color: #d1fae5; border-color: #10b981; color: #047857; pointer-events: none; opacity: 0.7; }
         .match-item.error { border-color: #f43f5e; background-color: #ffe4e6; color: #e11d48; }
 
         .tab-btn.active {
             border-bottom: 3px solid #4f46e5;
             color: #4f46e5;
+            background-color: #f8fafc;
             font-weight: 700;
         }
+
+        /* 表格樣式 */
+        .grammar-table { width: 100%; border-collapse: collapse; margin-top: 1rem; margin-bottom: 1rem; }
+        .grammar-table th, .grammar-table td { border: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+        .grammar-table th { background-color: #f1f5f9; font-weight: bold; color: #475569; }
     </style>
 </head>
 <body class="min-h-screen text-slate-800 flex flex-col">
 
     <!-- 導航列 -->
-    <nav class="bg-emerald-600 text-white p-4 shadow-md sticky top-0 z-50">
+    <nav class="bg-indigo-700 text-white p-4 shadow-md sticky top-0 z-50">
         <div class="max-w-5xl mx-auto flex justify-between items-center">
-            <a href="https://baewoojakorlearners.github.io/Korean/" class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition group" title="回到主頁">
+            <!-- 回到 Index 版面 -->
+            <a href="index.html" class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition group">
                 <div class="bg-white/20 p-2 rounded-lg group-hover:bg-white/30 transition duration-300">
                     <i class="fas fa-home text-xl"></i>
                 </div>
-                <h1 class="font-black text-xl tracking-tight">文法與實戰</h1>
+                <div>
+                    <h1 class="font-black text-xl tracking-tight">韓國語文法中心</h1>
+                    <p class="text-[10px] opacity-80 uppercase tracking-widest">延世 40 核心文法</p>
+                </div>
             </a>
             
             <!-- 章節選擇器 -->
             <div class="relative">
-                <select id="lesson-selector" onchange="changeLesson(this.value)" class="appearance-none bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2 pl-4 pr-10 rounded-xl outline-none cursor-pointer border border-emerald-500 shadow-sm transition">
+                <select id="lesson-selector" onchange="changeLesson(this.value)" class="appearance-none bg-indigo-800 hover:bg-indigo-900 text-white font-bold py-2.5 pl-5 pr-12 rounded-xl outline-none cursor-pointer border border-indigo-500 shadow-sm transition text-sm md:text-base max-w-[180px] md:max-w-xs">
                     <!-- 由 JS 動態生成 -->
                 </select>
                 <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-sm pointer-events-none"></i>
@@ -91,19 +97,19 @@
         <!-- 模組標籤頁切換 -->
         <div class="flex overflow-x-auto custom-scrollbar bg-white rounded-t-2xl shadow-sm border-b border-slate-200">
             <button onclick="switchTab('theory')" id="tab-theory" class="tab-btn active px-6 py-4 whitespace-nowrap text-slate-500 hover:bg-slate-50 transition flex items-center gap-2">
-                <i class="fas fa-book-open"></i> 理論學習
+                <i class="fas fa-book-open"></i> 文法解析
             </button>
             <button onclick="switchTab('matching')" id="tab-matching" class="tab-btn px-6 py-4 whitespace-nowrap text-slate-500 hover:bg-slate-50 transition flex items-center gap-2">
-                <i class="fas fa-link"></i> 配對連線
+                <i class="fas fa-link"></i> 連線配對
+            </button>
+            <button onclick="switchTab('mc')" id="tab-mc" class="tab-btn px-6 py-4 whitespace-nowrap text-slate-500 hover:bg-slate-50 transition flex items-center gap-2">
+                <i class="fas fa-list-ul"></i> 選擇題 (10題)
             </button>
             <button onclick="switchTab('puzzle')" id="tab-puzzle" class="tab-btn px-6 py-4 whitespace-nowrap text-slate-500 hover:bg-slate-50 transition flex items-center gap-2">
                 <i class="fas fa-puzzle-piece"></i> 句子重組
             </button>
-            <button onclick="switchTab('mc')" id="tab-mc" class="tab-btn px-6 py-4 whitespace-nowrap text-slate-500 hover:bg-slate-50 transition flex items-center gap-2">
-                <i class="fas fa-list-ul"></i> 選擇題
-            </button>
             <button onclick="switchTab('typing')" id="tab-typing" class="tab-btn px-6 py-4 whitespace-nowrap text-slate-500 hover:bg-slate-50 transition flex items-center gap-2">
-                <i class="fas fa-keyboard"></i> 輸入測驗
+                <i class="fas fa-keyboard"></i> 填空輸入
             </button>
         </div>
 
@@ -114,119 +120,308 @@
 
     </main>
 
-    <!-- 提示框 -->
     <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800/90 text-white px-6 py-3 rounded-2xl shadow-xl opacity-0 transition-opacity duration-300 pointer-events-none z-[100] font-bold"></div>
 
     <script>
         /* =====================================================================
-           🌟 課程資料庫 (未來更新方法) 🌟
-           日後想加新章節，只需要在這個陣列 (COURSE_DATA) 中複製貼上一組新的 JSON 物件。
-           不需要去改動下方的任何邏輯程式碼！
+           🌟 40 課文法資料庫 🌟
         ===================================================================== */
         const COURSE_DATA = [
             {
                 id: "lesson_1",
-                title: "Lesson 1: 打招呼與 은/는",
-                // 1. 理論教學區
+                title: "1. 이다 (是)",
                 theory: [
                     {
-                        title: "1. 打招呼與自我介紹 (인사)",
+                        title: "1. 이다 文法解析",
                         content: `
-                            <ul class="list-disc list-inside space-y-2 text-lg">
-                                <li><span class="font-bold korean-font text-indigo-600">안녕하세요 / 안녕하십니까?</span> : 你好</li>
-                                <li><span class="font-bold korean-font text-indigo-600">저는 ___ 입니다. / 저는 ___이라고 합니다.</span> : 我是 ___。</li>
+                            <p class="mb-4 text-slate-700 leading-relaxed">
+                                <strong class="text-indigo-600 text-lg">이다</strong> 相當於中文的「是」，用來敘述主語的身分、國籍、職業或事物的名稱。
+                                <br>⚠️ <span class="text-rose-500 font-bold">注意：</span>韓文的「이다」必須與前面的名詞<strong>連寫，中間不可以有空格！</strong>
+                            </p>
+                            
+                            <h4 class="font-bold text-slate-800 mt-6 mb-2">格式體尊敬階變化 (最禮貌、正式的用法)：</h4>
+                            <table class="grammar-table">
+                                <tr>
+                                    <th>句型</th>
+                                    <th>形態</th>
+                                    <th>說明</th>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold text-indigo-600">肯定句</td>
+                                    <td class="korean-font font-bold">N + 입니다</td>
+                                    <td>表示「是...」</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold text-rose-500">疑問句</td>
+                                    <td class="korean-font font-bold">N + 입니까?</td>
+                                    <td>表示「是...嗎？」</td>
+                                </tr>
+                            </table>
+
+                            <h4 class="font-bold text-slate-800 mt-6 mb-2">📚 實用例句：</h4>
+                            <ul class="space-y-3 bg-slate-50 p-5 rounded-xl border border-slate-100">
+                                <li><span class="korean-font font-bold text-lg">저는 학생<span class="text-indigo-600">입니다</span>.</span> <span class="text-slate-500 ml-2">(我是學生。)</span></li>
+                                <li><span class="korean-font font-bold text-lg">마이클은 미국 사람<span class="text-indigo-600">입니다</span>.</span> <span class="text-slate-500 ml-2">(麥可是美國人。)</span></li>
+                                <li><span class="korean-font font-bold text-lg">여기가 서울<span class="text-indigo-600">입니다</span>.</span> <span class="text-slate-500 ml-2">(這裡是首爾。)</span></li>
+                                <li><span class="korean-font font-bold text-lg">이것은 책<span class="text-indigo-600">입니다</span>.</span> <span class="text-slate-500 ml-2">(這是書。)</span></li>
+                                <li class="pt-2 border-t border-slate-200"><span class="korean-font font-bold text-lg">직업이 무엇<span class="text-rose-500">입니까?</span></span> <span class="text-slate-500 ml-2">(職業是什麼？)</span></li>
+                                <li><span class="korean-font font-bold text-lg">어느 나라 사람<span class="text-rose-500">입니까?</span></span> <span class="text-slate-500 ml-2">(是哪國人？)</span></li>
                             </ul>
-                            <div class="mt-4 p-4 bg-emerald-50 rounded-xl border border-emerald-100">
-                                💡 <strong>稱呼用語：</strong> <br>
-                                <span class="korean-font font-bold">선생님</span> (老師)、<span class="korean-font font-bold">씨</span> (先生/小姐)、<span class="korean-font font-bold">님</span> (尊稱)
-                            </div>
                         `
                     },
                     {
-                        title: "2. 主題助詞 (은/는)",
+                        title: "🇰🇷 文化與使用情境 (Culture & Context)",
                         content: `
-                            <p class="mb-4">用於主要名詞後面，標示句子的「主題」，或表示「對比/強調」及「再次提及」。</p>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-center">
-                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
-                                    <h4 class="font-bold text-blue-800 mb-2">有尾音 (子音結尾)</h4>
-                                    <p class="text-3xl font-black korean-font text-blue-600">+ 은</p>
-                                    <p class="mt-2 text-slate-500 text-sm">例: 서울 (首爾) <i class="fas fa-arrow-right"></i> <strong class="korean-font text-black">서울은</strong></p>
-                                </div>
-                                <div class="bg-rose-50 p-4 rounded-xl border border-rose-200">
-                                    <h4 class="font-bold text-rose-800 mb-2">無尾音 (母音結尾)</h4>
-                                    <p class="text-3xl font-black korean-font text-rose-600">+ 는</p>
-                                    <p class="mt-2 text-slate-500 text-sm">例: 저 (我) <i class="fas fa-arrow-right"></i> <strong class="korean-font text-black">저는</strong></p>
-                                </div>
-                            </div>
-                            <div class="space-y-2 bg-slate-50 p-4 rounded-xl text-sm">
-                                <p><span class="badge bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs">對比</span> 동생<strong class="text-indigo-600">은</strong> 키가 큽니다. 저<strong class="text-indigo-600">는</strong> 키가 작습니다. (弟弟很高，而我很矮。)</p>
-                                <p><span class="badge bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs">再次提及</span> 이것이 뭐예요? 그것<strong class="text-indigo-600">은</strong> 연필이에요. (這是什麼？那個是鉛筆。)</p>
+                            <div class="bg-amber-50 p-6 rounded-2xl border border-amber-200">
+                                <h4 class="font-bold text-amber-800 mb-3 text-lg"><i class="fas fa-handshake"></i> 韓國人的初次見面</h4>
+                                <p class="text-slate-700 leading-relaxed mb-4">
+                                    在韓國，初次見面或在正式場合（如公司面試、軍隊、新聞播報）中，一定會使用最高敬語的 <strong>입니다 / 입니까?</strong> 結尾。這被稱為「格式體尊敬階」(격식체)。
+                                </p>
+                                <p class="text-slate-700 leading-relaxed">
+                                    打招呼時通常會搭配 45 度鞠躬，並說出標準的自我介紹套句：<br>
+                                    <strong class="korean-font text-indigo-700 bg-indigo-100 px-2 py-1 rounded mt-2 inline-block">안녕하십니까? 저는 [名字]입니다. 만나서 반갑습니다.</strong><br>
+                                    <span class="text-sm text-slate-500">(您好？我是[名字]。很高興見到您。)</span>
+                                </p>
                             </div>
                         `
                     }
                 ],
-                // 2. 配對連線題
                 matching: [
-                    { left: "서울 (有尾音)", right: "은" },
-                    { left: "동생 (有尾音)", right: "은" },
-                    { left: "저 (無尾音)", right: "는" },
-                    { left: "티부 씨 (無尾音)", right: "는" }
+                    { left: "학생", right: "입니다 (肯定)" },
+                    { left: "무엇", right: "입니까 (疑問)" },
+                    { left: "의사 이다 (X)", right: "의사이다 (O)" },
+                    { left: "미국 사람", right: "입니다" }
                 ],
-                // 3. 句子重組 (拼圖)
-                puzzle: [
-                    { sentence: ["서울은", "한국의", "수도", "입니다."], translation: "首爾是韓國的首都。" },
-                    { sentence: ["저는", "티부", "입니다."], translation: "我是Tibu。" }
-                ],
-                // 4. 選擇題
                 mc: [
-                    { 
-                        question: "고기를 좋아합니다. 생선(___) 싫어 합니다.", 
-                        options: ["은", "는", "이", "가"], 
-                        answer: "은", 
-                        translation: "喜歡肉。討厭魚。 (對比)"
-                    },
-                    { 
-                        question: "이것이 뭐예요? 그것(___) 연필이에요.", 
-                        options: ["은", "는", "을", "를"], 
-                        answer: "은", 
-                        translation: "這是什麼？那個是鉛筆。"
-                    }
+                    { question: "저는 한국 사람(___).", options: ["입니다", "입니까", "은", "는"], answer: "입니다", translation: "我是韓國人。" },
+                    { question: "이름이 무엇(___)?", options: ["입니다", "입니까", "이", "가"], answer: "입니까", translation: "名字是什麼？" },
+                    { question: "여기가 학교(___).", options: ["입니다", "입니까", "은", "를"], answer: "입니다", translation: "這裡是學校。" },
+                    { question: "직업이 의사(___)?", options: ["입니다", "입니까", "은", "를"], answer: "입니까", translation: "職業是醫生嗎？" },
+                    { question: "이것은 연필(___).", options: ["입니다", "입니까", "가", "이"], answer: "입니다", translation: "這是鉛筆。" },
+                    { question: "어느 나라 사람(___)?", options: ["입니다", "입니까", "에", "를"], answer: "입니까", translation: "是哪國人？" },
+                    { question: "저 사람은 선생님(___).", options: ["입니다", "입니까", "은", "는"], answer: "입니다", translation: "那個人是老師。" },
+                    { question: "여기가 화장실(___)?", options: ["입니다", "입니까", "이", "가"], answer: "입니까", translation: "這裡是洗手間嗎？" },
+                    { question: "저는 학생( ___ ).", options: [" 입니다", "입니다", "은", "는"], answer: "입니다", translation: "我是學生。(注意無空格)" },
+                    { question: "전공이 무엇(___)?", options: ["입니다", "입니까", "이", "가"], answer: "입니까", translation: "主修是什麼？" }
                 ],
-                // 5. 填空題 (鍵盤輸入)
+                puzzle: [
+                    { sentence: ["저는", "대만", "사람", "입니다."], translation: "我是台灣人。" },
+                    { sentence: ["이름이", "무엇", "입니까?"], translation: "名字是什麼？" },
+                    { sentence: ["제", "직업은", "학생", "입니다."], translation: "我的職業是學生。" },
+                    { sentence: ["여기가", "연세대학교", "입니다."], translation: "這裡是延世大學。" },
+                    { sentence: ["저", "사람은", "의사", "입니다."], translation: "那個人是醫生。" }
+                ],
                 typing: [
-                    { question: "티부 씨(___) 선생님입니다.", answer: "는", hint: "無尾音接什麼？", translation: "Tibu先生是老師。" },
-                    { question: "동생(___) 키가 큽니다.", answer: "은", hint: "有尾音接什麼？", translation: "弟弟很高。" }
+                    { question: "저는 학생(___).", answer: "입니다", hint: "肯定句結尾", translation: "我是學生。" },
+                    { question: "이름이 무엇(___)?", answer: "입니까", hint: "疑問句結尾", translation: "名字是什麼？" },
+                    { question: "이것은 책(___).", answer: "입니다", hint: "肯定句結尾", translation: "這是書。" },
+                    { question: "어느 나라 사람(___)?", answer: "입니까", hint: "疑問句結尾", translation: "是哪國人？" }
                 ]
             },
-            // ======== 你可以在這裡加入 Lesson 2 ========
             {
                 id: "lesson_2",
-                title: "Lesson 2: 預留章節 (測試用)",
-                theory: [{ title: "第二課", content: "這裡是第二課的內容，你可以依照上面的格式填入新文法。" }],
-                matching: [{ left: "測試左", right: "測試右" }],
-                puzzle: [{ sentence: ["이것은", "테스트", "입니다."], translation: "這是測試。" }],
-                mc: [{ question: "1+1=?", options: ["1", "2", "3"], answer: "2", translation: "數學" }],
-                typing: [{ question: "蘋果的韓文是 ___", answer: "사과", hint: "s..." }]
+                title: "2. 은/는 (主題助詞)",
+                theory: [
+                    {
+                        title: "1. 은/는 文法解析",
+                        content: `
+                            <p class="mb-4 text-slate-700 leading-relaxed">
+                                <strong class="text-indigo-600 text-lg">은/는</strong> 是附加在名詞後面的「輔助詞」，主要有三個強大的功能：標示句子主題、對比強調、以及承接舊話題。
+                            </p>
+                            
+                            <h4 class="font-bold text-slate-800 mt-6 mb-2">接續規則 (看有沒有尾音)：</h4>
+                            <table class="grammar-table text-center">
+                                <tr>
+                                    <th>前一個字的尾音 (받침)</th>
+                                    <th>助詞選擇</th>
+                                    <th>組合範例</th>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold text-indigo-600">有尾音 (子音結尾)</td>
+                                    <td class="text-2xl font-black text-indigo-600">은</td>
+                                    <td>선생님 + 은 = <span class="font-bold">선생님은</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold text-emerald-600">無尾音 (母音結尾)</td>
+                                    <td class="text-2xl font-black text-emerald-600">는</td>
+                                    <td>저 + 는 = <span class="font-bold">저는</span></td>
+                                </tr>
+                            </table>
+
+                            <h4 class="font-bold text-slate-800 mt-6 mb-2">📚 三大核心功能與例句：</h4>
+                            <ul class="space-y-4 bg-slate-50 p-5 rounded-xl border border-slate-100">
+                                <li>
+                                    <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs font-bold mr-2">1. 標示主題</span><br>
+                                    <span class="korean-font font-bold text-lg mt-1 inline-block">한국어<span class="text-emerald-600">는</span> 재미있습니다.</span> <span class="text-slate-500 ml-2">(韓文很有趣。)</span>
+                                </li>
+                                <li>
+                                    <span class="bg-rose-100 text-rose-800 px-2 py-1 rounded text-xs font-bold mr-2">2. 對比與強調</span><br>
+                                    <span class="korean-font font-bold text-lg mt-1 inline-block">형<span class="text-indigo-600">은</span> 큽니다. 동생<span class="text-indigo-600">은</span> 작습니다.</span> <span class="text-slate-500 ml-2">(哥哥很高，但弟弟很矮。)</span>
+                                </li>
+                                <li>
+                                    <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs font-bold mr-2">3. 再次提及 (舊資訊)</span><br>
+                                    <span class="korean-font font-bold text-lg mt-1 inline-block">이것이 뭐예요? 그것<span class="text-indigo-600">은</span> 연필입니다.</span> <span class="text-slate-500 ml-2">(這是什麼？那個是鉛筆。)</span>
+                                </li>
+                            </ul>
+                        `
+                    },
+                    {
+                        title: "🇰🇷 文化與使用情境 (Culture & Context)",
+                        content: `
+                            <div class="bg-amber-50 p-6 rounded-2xl border border-amber-200">
+                                <h4 class="font-bold text-amber-800 mb-3 text-lg"><i class="fas fa-comment-dots"></i> 韓國人的省略藝術</h4>
+                                <p class="text-slate-700 leading-relaxed mb-4">
+                                    當我們用「은/는」確立了對話的「主題」後，只要主題沒有改變，韓國人通常會在接下來的對話中<strong>直接省略主語</strong>。
+                                </p>
+                                <p class="text-slate-700 leading-relaxed bg-white p-3 rounded border border-amber-100">
+                                    A: 마이클 씨<strong>는</strong> 학생입니까? (麥可是學生嗎？)<br>
+                                    B: 네, (저는) 학생입니다. (是的，我是學生。)<br>
+                                    <span class="text-sm text-slate-400">因為主題已經很明確是麥可了，所以回答時常常會把「저는」省略掉，顯得更自然道地。</span>
+                                </p>
+                            </div>
+                        `
+                    }
+                ],
+                matching: [
+                    { left: "선생님 (有尾音)", right: "은" },
+                    { left: "동생 (有尾音)", right: "은" },
+                    { left: "저 (無尾音)", right: "는" },
+                    { left: "사과 (無尾音)", right: "는" }
+                ],
+                mc: [
+                    { question: "저(___) 학생입니다.", options: ["은", "는", "이", "가"], answer: "는", translation: "我是學生。" },
+                    { question: "선생님(___) 한국 사람입니다.", options: ["은", "는", "이", "가"], answer: "은", translation: "老師是韓國人。" },
+                    { question: "오늘 날씨(___) 좋습니다.", options: ["은", "는", "을", "를"], answer: "는", translation: "今天天氣很好。" },
+                    { question: "수박(___) 맛있습니다.", options: ["은", "는", "이", "가"], answer: "은", translation: "西瓜很好吃。" },
+                    { question: "형(___) 큽니다. 동생(___) 작습니다.", options: ["은", "는", "이", "가"], answer: "은", translation: "哥哥高。弟弟矮。" },
+                    { question: "이것이 뭐예요? 그것(___) 시계입니다.", options: ["은", "는", "이", "가"], answer: "은", translation: "這是什麼？那個是時鐘。" },
+                    { question: "어머니(___) 의사입니다.", options: ["은", "는", "이", "가"], answer: "는", translation: "媽媽是醫生。" },
+                    { question: "연필(___) 쌉니다.", options: ["은", "는", "이", "가"], answer: "은", translation: "鉛筆很便宜。" },
+                    { question: "우산(___) 방에 있습니다.", options: ["은", "는", "을", "를"], answer: "은", translation: "雨傘在房間裡。" },
+                    { question: "학교(___) 큽니다.", options: ["은", "는", "이", "가"], answer: "는", translation: "學校很大。" }
+                ],
+                puzzle: [
+                    { sentence: ["저는", "사과를", "좋아합니다."], translation: "我喜歡蘋果。" },
+                    { sentence: ["선생님은", "교실에", "있습니다."], translation: "老師在教室裡。" },
+                    { sentence: ["오늘", "날씨는", "매우", "춥습니다."], translation: "今天天氣非常冷。" },
+                    { sentence: ["형은", "크고", "동생은", "작습니다."], translation: "哥哥高，弟弟矮。" },
+                    { sentence: ["그것은", "제", "가방", "입니다."], translation: "那個是我的包包。" }
+                ],
+                typing: [
+                    { question: "저(___) 학생입니다.", answer: "는", hint: "無尾音", translation: "我是學生。" },
+                    { question: "선생님(___) 한국 사람입니다.", answer: "은", hint: "有尾音", translation: "老師是韓國人。" },
+                    { question: "사과(___) 맛있습니다.", answer: "는", hint: "無尾音", translation: "蘋果很好吃。" },
+                    { question: "수박(___) 싫어합니다.", answer: "은", hint: "有尾音", translation: "討厭西瓜。" }
+                ]
+            },
+            {
+                id: "lesson_3",
+                title: "3. 이/가 (主格助詞)",
+                theory: [
+                    {
+                        title: "1. 이/가 文法解析",
+                        content: `
+                            <p class="mb-4 text-slate-700 leading-relaxed">
+                                <strong class="text-indigo-600 text-lg">이/가</strong> 是主格助詞，用來明確標示句子中動作或狀態的「主體（是誰做的/是什麼）」。<br>
+                                與「은/는」不同，它著重於帶出<strong>新資訊</strong>或<strong>強調主語本身</strong>。
+                            </p>
+                            
+                            <table class="grammar-table text-center">
+                                <tr>
+                                    <th>尾音 (받침) 狀態</th>
+                                    <th>助詞選擇</th>
+                                    <th>範例</th>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold text-indigo-600">有尾音</td>
+                                    <td class="text-2xl font-black text-indigo-600">이</td>
+                                    <td>가방 + 이 = <span class="font-bold">가방이</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold text-emerald-600">無尾音</td>
+                                    <td class="text-2xl font-black text-emerald-600">가</td>
+                                    <td>의자 + 가 = <span class="font-bold">의자가</span></td>
+                                </tr>
+                            </table>
+
+                            <div class="mt-4 bg-rose-50 p-4 rounded-xl border border-rose-200">
+                                <h4 class="font-bold text-rose-800 mb-2">⚠️ 特殊變化規則：</h4>
+                                <p class="text-sm text-slate-700">當代詞 나(我), 너(你), 저(我,謙稱), 누구(誰) 遇上 가 時，形態會發生改變：</p>
+                                <ul class="list-disc list-inside mt-2 text-sm font-bold korean-font text-rose-700">
+                                    <li>나 + 가 <i class="fas fa-arrow-right mx-1 text-slate-400"></i> 내가 (我)</li>
+                                    <li>저 + 가 <i class="fas fa-arrow-right mx-1 text-slate-400"></i> 제가 (我-謙稱)</li>
+                                    <li>누구 + 가 <i class="fas fa-arrow-right mx-1 text-slate-400"></i> 누가 (誰)</li>
+                                </ul>
+                            </div>
+                        `
+                    }
+                ],
+                matching: [
+                    { left: "가방 (有尾音)", right: "이" },
+                    { left: "의자 (無尾音)", right: "가" },
+                    { left: "저 + 가", right: "제가" },
+                    { left: "누구 + 가", right: "누가" }
+                ],
+                mc: [
+                    { question: "비(___) 옵니다.", options: ["이", "가", "은", "는"], answer: "가", translation: "下雨了。" },
+                    { question: "바람(___) 붑니다.", options: ["이", "가", "은", "는"], answer: "이", translation: "刮風了。" },
+                    { question: "누(___) 왔습니까?", options: ["가", "이", "구", "는"], answer: "가", translation: "誰來了？(누구+가)" },
+                    { question: "가방(___) 무겁습니다.", options: ["이", "가", "은", "는"], answer: "이", translation: "包包很重。" },
+                    { question: "시계(___) 비쌉니다.", options: ["이", "가", "은", "를"], answer: "가", translation: "時鐘很貴。" },
+                    { question: "제(___) 학생입니다.", options: ["가", "이", "는", "은"], answer: "가", translation: "我是學生。(저+가)" },
+                    { question: "동생(___) 잡니다.", options: ["이", "가", "은", "를"], answer: "이", translation: "弟弟在睡覺。" },
+                    { question: "사과(___) 맛있습니다.", options: ["이", "가", "에", "를"], answer: "가", translation: "蘋果很好吃。" },
+                    { question: "꽃(___) 예쁩니다.", options: ["이", "가", "은", "는"], answer: "이", translation: "花很漂亮。" },
+                    { question: "친구(___) 옵니다.", options: ["이", "가", "은", "를"], answer: "가", translation: "朋友來了。" }
+                ],
+                puzzle: [
+                    { sentence: ["비가", "많이", "옵니다."], translation: "雨下得很大。" },
+                    { sentence: ["누가", "교실에", "있습니까?"], translation: "誰在教室裡？" },
+                    { sentence: ["제가", "도와", "주겠습니다."], translation: "我來幫忙。" },
+                    { sentence: ["바람이", "시원하게", "붑니다."], translation: "風吹得很涼爽。" },
+                    { sentence: ["사과가", "아주", "맛있습니다."], translation: "蘋果非常好吃。" }
+                ],
+                typing: [
+                    { question: "비(___) 옵니다.", answer: "가", hint: "無尾音", translation: "下雨了。" },
+                    { question: "바람(___) 붑니다.", answer: "이", hint: "有尾音", translation: "刮風了。" },
+                    { question: "누(___) 왔습니까?", answer: "가", hint: "誰來了？特殊變化", translation: "誰來了？" },
+                    { question: "제(___) 합니다.", answer: "가", hint: "我來做。特殊變化", translation: "我來做。" }
+                ]
+            },
+            /* =========================================================
+               ⚠️ 日後擴充區 ⚠️
+               以下為第 4 課至 40 課的擴充位置。請直接複製上面的格式。
+               ========================================================= */
+            {
+                id: "lesson_4",
+                title: "4. 에 있다/없다 (存在/位置)",
+                theory: [
+                    { title: "文法建置中", content: "<p>本課程內容尚未新增，您可以透過修改原始碼中的 COURSE_DATA 來完成擴充。</p>" }
+                ],
+                matching: [{ left: "교실", right: "에 있습니다" }],
+                mc: [{ question: "방(___) 있습니다.", options: ["에", "이", "가", "은"], answer: "에", translation: "在房間裡。" }],
+                puzzle: [{ sentence: ["책상", "위에", "있습니다."], translation: "在書桌上。" }],
+                typing: [{ question: "학교(___) 있습니다.", answer: "에", hint: "地點助詞", translation: "在學校裡。" }]
             }
+            // 繼續複製貼上 lesson_5, lesson_6... 直到 lesson_40
         ];
 
         /* =====================================================================
-           內部邏輯 (除非改版面，否則不用動)
+           底層程式邏輯 (負責動態生成 UI 與測驗驗證)
         ===================================================================== */
         let currentLessonId = COURSE_DATA[0].id;
         let currentTab = 'theory';
 
-        // 狀態暫存
-        let matchState = { selectedLeft: null, selectedRight: null, matchedPairs: [] };
+        let matchState = { lefts: null, rights: null, selectedLeft: null, selectedRight: null, matchedPairs: [] };
         let puzzleState = { currentQ: 0, pieces: [], answer: [] };
         let typingState = { currentQ: 0 };
+        let mcState = { currentQ: 0, score: 0 };
 
         window.onload = () => {
             initLessonSelector();
             renderContent();
         };
 
-        // 初始化選單
         function initLessonSelector() {
             const selector = document.getElementById('lesson-selector');
             selector.innerHTML = COURSE_DATA.map(lesson => 
@@ -234,14 +429,12 @@
             ).join('');
         }
 
-        // 切換章節
         function changeLesson(lessonId) {
             currentLessonId = lessonId;
             resetStates();
             renderContent();
         }
 
-        // 切換分籤 (Tab)
         function switchTab(tabId) {
             currentTab = tabId;
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -251,22 +444,19 @@
         }
 
         function resetStates() {
-            matchState = { selectedLeft: null, selectedRight: null, matchedPairs: [] };
+            matchState = { lefts: null, rights: null, selectedLeft: null, selectedRight: null, matchedPairs: [] };
             puzzleState = { currentQ: 0, pieces: [], answer: [] };
             typingState = { currentQ: 0 };
+            mcState = { currentQ: 0, score: 0 };
         }
 
-        // 取得當前課程資料
-        function getCurData() {
-            return COURSE_DATA.find(l => l.id === currentLessonId);
-        }
+        function getCurData() { return COURSE_DATA.find(l => l.id === currentLessonId); }
 
-        // 主渲染函數
         function renderContent() {
             const container = document.getElementById('content-area');
             const data = getCurData();
             
-            container.innerHTML = ''; // 清空
+            container.innerHTML = '';
             container.className = "bg-white p-6 md:p-8 rounded-b-2xl shadow-sm flex-1 min-h-[500px] fade-in";
 
             if(currentTab === 'theory') renderTheory(container, data.theory);
@@ -276,15 +466,15 @@
             if(currentTab === 'typing') renderTyping(container, data.typing);
         }
 
-        // --- 1. 理論渲染 ---
+        // --- 1. 理論 ---
         function renderTheory(container, theoryData) {
-            if(!theoryData || theoryData.length===0) return container.innerHTML = "<p>無資料</p>";
+            if(!theoryData || theoryData.length===0) return container.innerHTML = "<p class='text-center text-slate-400 mt-10'>內容建置中...</p>";
             let html = `<div class="space-y-8">`;
             theoryData.forEach(item => {
                 html += `
-                    <div class="bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-100 shadow-sm">
-                        <h2 class="text-2xl font-black text-emerald-700 mb-4 border-b-2 border-emerald-100 pb-2">${item.title}</h2>
-                        <div class="text-slate-700 leading-relaxed">${item.content}</div>
+                    <div class="bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                        <h2 class="text-2xl font-black text-indigo-700 mb-6 border-b-2 border-indigo-50 pb-3"><i class="fas fa-bookmark text-indigo-300 mr-2"></i>${item.title}</h2>
+                        <div class="text-slate-700 leading-relaxed text-lg">${item.content}</div>
                     </div>
                 `;
             });
@@ -292,11 +482,10 @@
             container.innerHTML = html;
         }
 
-        // --- 2. 連線配對 (Matching) ---
+        // --- 2. 連線配對 ---
         function renderMatching(container, matchingData) {
-            if(!matchingData || matchingData.length===0) return container.innerHTML = "<p>無資料</p>";
+            if(!matchingData || matchingData.length===0) return container.innerHTML = "<p class='text-center text-slate-400 mt-10'>內容建置中...</p>";
             
-            // 如果還沒初始化，就隨機打亂左邊和右邊
             if(matchState.matchedPairs.length === 0 && !matchState.lefts) {
                 let lefts = matchingData.map((d, i) => ({ text: d.left, matchId: i, type: 'left' }));
                 let rights = matchingData.map((d, i) => ({ text: d.right, matchId: i, type: 'right' }));
@@ -304,127 +493,179 @@
                 matchState.rights = rights.sort(() => Math.random() - 0.5);
             }
 
-            // 完成檢查
             if(matchState.matchedPairs.length === matchingData.length) {
                 return container.innerHTML = `
                     <div class="text-center py-20 pop">
                         <i class="fas fa-check-circle text-6xl text-emerald-500 mb-4"></i>
-                        <h2 class="text-3xl font-black">全部配對成功！</h2>
-                        <button onclick="resetStates(); renderContent();" class="mt-6 bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700">再玩一次</button>
-                    </div>
-                `;
+                        <h2 class="text-3xl font-black text-slate-800">完美配對！</h2>
+                        <p class="text-slate-500 mt-2">您已經掌握了這些規則。</p>
+                        <button onclick="resetStates(); renderContent();" class="mt-8 bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 shadow-md">再練習一次</button>
+                    </div>`;
             }
 
             let html = `
-                <div class="text-center mb-8">
+                <div class="text-center mb-10">
                     <h2 class="text-2xl font-black text-slate-800">連連看</h2>
-                    <p class="text-slate-500">請點選左邊的詞，再點選右邊對應的助詞。</p>
+                    <p class="text-slate-500 mt-2">點選左側名詞，找出右側正確的助詞或接續。</p>
                 </div>
-                <div class="flex justify-between gap-4 max-w-2xl mx-auto">
-                    <!-- 左側 -->
+                <div class="flex justify-between gap-4 md:gap-8 max-w-3xl mx-auto">
                     <div class="w-1/2 space-y-3" id="match-left">
                         ${matchState.lefts.map(item => `
-                            <button onclick="handleMatchClick(${item.matchId}, 'left', this)" 
-                                    class="match-item w-full p-4 rounded-xl bg-slate-50 font-bold text-lg text-slate-700 shadow-sm ${matchState.matchedPairs.includes(item.matchId) ? 'matched' : ''}">
-                                ${item.text}
-                            </button>
+                            <button onclick="handleMatchClick(${item.matchId}, 'left', this)" class="match-item w-full p-4 md:p-5 rounded-2xl bg-slate-50 font-bold text-lg text-slate-700 shadow-sm ${matchState.matchedPairs.includes(item.matchId) ? 'matched' : ''}">${item.text}</button>
                         `).join('')}
                     </div>
-                    <!-- 右側 -->
                     <div class="w-1/2 space-y-3" id="match-right">
                         ${matchState.rights.map(item => `
-                            <button onclick="handleMatchClick(${item.matchId}, 'right', this)" 
-                                    class="match-item w-full p-4 rounded-xl bg-slate-50 font-bold text-lg text-slate-700 korean-font shadow-sm ${matchState.matchedPairs.includes(item.matchId) ? 'matched' : ''}">
-                                ${item.text}
-                            </button>
+                            <button onclick="handleMatchClick(${item.matchId}, 'right', this)" class="match-item w-full p-4 md:p-5 rounded-2xl bg-slate-50 font-bold text-lg text-slate-700 korean-font shadow-sm ${matchState.matchedPairs.includes(item.matchId) ? 'matched' : ''}">${item.text}</button>
                         `).join('')}
                     </div>
-                </div>
-            `;
+                </div>`;
             container.innerHTML = html;
         }
 
         window.handleMatchClick = function(matchId, type, btnElement) {
             if(btnElement.classList.contains('matched')) return;
-
-            // 視覺更新
             document.querySelectorAll(`#match-${type} .match-item`).forEach(b => b.classList.remove('selected', 'error'));
             btnElement.classList.add('selected');
 
             if(type === 'left') matchState.selectedLeft = { id: matchId, element: btnElement };
             if(type === 'right') matchState.selectedRight = { id: matchId, element: btnElement };
 
-            // 判斷邏輯
             if(matchState.selectedLeft && matchState.selectedRight) {
                 if(matchState.selectedLeft.id === matchState.selectedRight.id) {
-                    // 答對
                     matchState.matchedPairs.push(matchId);
-                    showToast("配對成功！");
+                    showToast("✅ 配對成功！");
                     matchState.selectedLeft = null; matchState.selectedRight = null;
                     setTimeout(renderContent, 300);
                 } else {
-                    // 答錯
                     matchState.selectedLeft.element.classList.add('error', 'shake');
                     matchState.selectedRight.element.classList.add('error', 'shake');
                     setTimeout(() => {
-                        matchState.selectedLeft.element.classList.remove('selected', 'error', 'shake');
-                        matchState.selectedRight.element.classList.remove('selected', 'error', 'shake');
+                        if(matchState.selectedLeft) matchState.selectedLeft.element.classList.remove('selected', 'error', 'shake');
+                        if(matchState.selectedRight) matchState.selectedRight.element.classList.remove('selected', 'error', 'shake');
                         matchState.selectedLeft = null; matchState.selectedRight = null;
                     }, 500);
                 }
             }
         };
 
-        // --- 3. 句子重組 (Puzzle) ---
+        // --- 3. 選擇題 (MC) ---
+        function renderMC(container, mcData) {
+            if(!mcData || mcData.length===0) return container.innerHTML = "<p class='text-center text-slate-400 mt-10'>內容建置中...</p>";
+            
+            let qIndex = mcState.currentQ;
+            if(qIndex >= mcData.length) {
+                let perfect = mcState.score === mcData.length;
+                return container.innerHTML = `
+                    <div class="text-center py-20 pop">
+                        <i class="fas ${perfect ? 'fa-trophy text-amber-400' : 'fa-check-circle text-indigo-500'} text-7xl mb-6"></i>
+                        <h2 class="text-4xl font-black text-slate-800 mb-2">測驗完成！</h2>
+                        <p class="text-xl text-slate-600 font-bold mb-8">得分: <span class="${perfect ? 'text-emerald-500' : 'text-indigo-600'}">${mcState.score} / ${mcData.length}</span></p>
+                        <button onclick="resetStates(); renderContent();" class="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-indigo-700 shadow-lg">重新測驗</button>
+                    </div>`;
+            }
+
+            let q = mcData[qIndex];
+            
+            // 進度條
+            let progressHtml = `
+                <div class="w-full bg-slate-100 rounded-full h-2 mb-8">
+                    <div class="bg-indigo-500 h-2 rounded-full transition-all duration-300" style="width: ${(qIndex/mcData.length)*100}%"></div>
+                </div>
+            `;
+
+            container.innerHTML = `
+                ${progressHtml}
+                <div class="max-w-2xl mx-auto animate-fade-in">
+                    <div class="text-center mb-10">
+                        <span class="inline-block bg-indigo-100 text-indigo-700 font-black text-xs uppercase tracking-widest px-3 py-1 rounded-full mb-4">Question ${qIndex+1} of ${mcData.length}</span>
+                        <h3 class="text-3xl md:text-4xl font-black korean-font mb-4 text-slate-800 leading-snug">${q.question.replace('___', '_____')}</h3>
+                        <p class="text-slate-500 text-sm font-medium"><i class="fas fa-language mr-1"></i> ${q.translation}</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="mc-options">
+                        ${q.options.map(opt => `
+                            <button onclick="handleMCClick(this, '${opt}', '${q.answer}')" class="bg-white border-2 border-slate-200 p-5 rounded-2xl font-bold korean-font text-xl hover:border-indigo-400 hover:shadow-md transition-all active:scale-95 text-slate-700">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="mc-feedback" class="mt-8 text-center h-12 flex justify-center items-center"></div>
+                </div>
+            `;
+        }
+
+        window.handleMCClick = function(btn, selected, correct) {
+            const parent = document.getElementById(`mc-options`);
+            const feedback = document.getElementById(`mc-feedback`);
+            
+            parent.querySelectorAll('button').forEach(b => b.disabled = true);
+
+            if(selected === correct) {
+                btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600', 'pop');
+                btn.classList.remove('bg-white', 'text-slate-700');
+                mcState.score++;
+                feedback.innerHTML = `<span class="text-emerald-600 font-bold text-lg"><i class="fas fa-check-circle mr-1"></i> 答對了！</span>`;
+                setTimeout(() => { mcState.currentQ++; renderContent(); }, 1000);
+            } else {
+                btn.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-600', 'shake');
+                parent.querySelectorAll('button').forEach(b => {
+                    if(b.innerText.trim() === correct) b.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-700');
+                });
+                feedback.innerHTML = `<span class="text-rose-500 font-bold text-lg"><i class="fas fa-times-circle mr-1"></i> 答錯了</span>`;
+                setTimeout(() => { mcState.currentQ++; renderContent(); }, 2000);
+            }
+        }
+
+        // --- 4. 句子重組 (Puzzle) ---
         function renderPuzzle(container, puzzleData) {
-            if(!puzzleData || puzzleData.length===0) return container.innerHTML = "<p>無資料</p>";
+            if(!puzzleData || puzzleData.length===0) return container.innerHTML = "<p class='text-center text-slate-400 mt-10'>內容建置中...</p>";
             
             let qIndex = puzzleState.currentQ;
             if(qIndex >= puzzleData.length) {
                 return container.innerHTML = `
                     <div class="text-center py-20 pop">
-                        <i class="fas fa-puzzle-piece text-6xl text-emerald-500 mb-4"></i>
-                        <h2 class="text-3xl font-black">完成所有重組！</h2>
-                        <button onclick="resetStates(); renderContent();" class="mt-6 bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700">再玩一次</button>
+                        <i class="fas fa-puzzle-piece text-6xl text-indigo-500 mb-4"></i>
+                        <h2 class="text-3xl font-black text-slate-800">句子重組完成！</h2>
+                        <button onclick="resetStates(); renderContent();" class="mt-8 bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 shadow-md">再練習一次</button>
                     </div>`;
             }
 
             let currentItem = puzzleData[qIndex];
             
-            // 初始化打亂碎片
             if(puzzleState.pieces.length === 0 && puzzleState.answer.length === 0) {
                 puzzleState.pieces = [...currentItem.sentence].sort(() => Math.random() - 0.5);
             }
 
             container.innerHTML = `
-                <div class="text-center mb-8">
-                    <span class="text-xs font-black text-indigo-500 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full">Question ${qIndex+1} / ${puzzleData.length}</span>
-                    <h2 class="text-2xl font-bold mt-4 text-slate-700">請重組句子</h2>
-                    <p class="text-slate-500 mt-2"><i class="fas fa-language"></i> 目標：${currentItem.translation}</p>
-                </div>
+                <div class="max-w-2xl mx-auto animate-fade-in">
+                    <div class="text-center mb-8">
+                        <span class="text-xs font-black text-indigo-500 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full">Question ${qIndex+1} / ${puzzleData.length}</span>
+                        <h2 class="text-2xl font-black mt-6 text-slate-800">請重組句子</h2>
+                        <p class="text-slate-500 mt-2 font-medium"><i class="fas fa-language"></i> 目標：${currentItem.translation}</p>
+                    </div>
 
-                <!-- 作答區 -->
-                <div class="min-h-[80px] bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-4 flex flex-wrap gap-2 items-center mb-8" id="puzzle-answer-box">
-                    ${puzzleState.answer.length === 0 ? '<span class="text-slate-400 mx-auto">點擊下方單字放入此處</span>' : 
-                      puzzleState.answer.map((word, i) => `
-                        <div onclick="puzzleRemove(${i})" class="puzzle-piece bg-indigo-600 text-white korean-font font-bold px-4 py-2 rounded-lg shadow-sm flex items-center gap-2">
-                            ${word} <i class="fas fa-times text-xs opacity-50 hover:opacity-100"></i>
-                        </div>
-                      `).join('')}
-                </div>
+                    <div class="min-h-[100px] bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-5 flex flex-wrap gap-3 items-center justify-center mb-8 transition-colors" id="puzzle-answer-box">
+                        ${puzzleState.answer.length === 0 ? '<span class="text-slate-400 font-bold">點擊下方單字放入此處</span>' : 
+                          puzzleState.answer.map((word, i) => `
+                            <div onclick="puzzleRemove(${i})" class="puzzle-piece bg-indigo-600 text-white korean-font font-bold text-lg px-5 py-3 rounded-xl shadow-md flex items-center gap-2">
+                                ${word} <i class="fas fa-times text-xs opacity-50"></i>
+                            </div>
+                          `).join('')}
+                    </div>
 
-                <!-- 碎片區 -->
-                <div class="flex flex-wrap gap-3 justify-center border-t border-slate-100 pt-8" id="puzzle-pieces-box">
-                    ${puzzleState.pieces.map((word, i) => `
-                        <button onclick="puzzleAdd(${i})" class="puzzle-piece bg-white border-2 border-slate-200 text-slate-700 korean-font font-bold px-5 py-3 rounded-xl shadow-sm hover:border-indigo-400 hover:text-indigo-600">
-                            ${word}
-                        </button>
-                    `).join('')}
-                </div>
-                
-                <div class="mt-8 flex justify-center gap-4">
-                    <button onclick="puzzleResetCurrent()" class="text-slate-500 font-bold hover:text-rose-500 px-4 py-2"><i class="fas fa-undo"></i> 重置</button>
-                    <button onclick="puzzleSubmit()" class="bg-slate-800 text-white font-bold px-8 py-3 rounded-xl hover:bg-black shadow-md">提交答案</button>
+                    <div class="flex flex-wrap gap-3 justify-center" id="puzzle-pieces-box">
+                        ${puzzleState.pieces.map((word, i) => `
+                            <button onclick="puzzleAdd(${i})" class="puzzle-piece bg-white border-2 border-slate-200 text-slate-700 korean-font font-bold text-lg px-5 py-3 rounded-xl shadow-sm hover:border-indigo-400 hover:text-indigo-600">
+                                ${word}
+                            </button>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="mt-12 flex justify-center gap-4 border-t border-slate-100 pt-6">
+                        <button onclick="puzzleResetCurrent()" class="text-slate-500 font-bold hover:text-rose-500 px-6 py-3 rounded-xl bg-slate-100 hover:bg-rose-50 transition"><i class="fas fa-undo mr-1"></i> 重置</button>
+                        <button onclick="puzzleSubmit()" class="bg-slate-800 text-white font-bold px-10 py-3 rounded-xl hover:bg-black shadow-lg transition">提交答案</button>
+                    </div>
                 </div>
             `;
         }
@@ -450,10 +691,11 @@
         window.puzzleSubmit = function() {
             const data = getCurData().puzzle;
             const correctArr = data[puzzleState.currentQ].sentence;
+            const answerBox = document.getElementById('puzzle-answer-box');
             
             if(puzzleState.answer.join('') === correctArr.join('')) {
-                showToast("正確！");
-                document.getElementById('puzzle-answer-box').classList.add('bg-emerald-100', 'border-emerald-500');
+                showToast("✅ 句子完全正確！");
+                answerBox.classList.add('bg-emerald-100', 'border-emerald-500');
                 setTimeout(() => {
                     puzzleState.currentQ++;
                     puzzleState.pieces = [];
@@ -461,92 +703,49 @@
                     renderContent();
                 }, 1000);
             } else {
-                document.getElementById('puzzle-answer-box').classList.add('shake', 'border-rose-400', 'bg-rose-50');
+                answerBox.classList.add('shake', 'border-rose-400', 'bg-rose-50');
+                showToast("❌ 順序似乎不對喔");
                 setTimeout(() => {
-                    document.getElementById('puzzle-answer-box').classList.remove('shake', 'border-rose-400', 'bg-rose-50');
+                    answerBox.classList.remove('shake', 'border-rose-400', 'bg-rose-50');
                 }, 500);
             }
         };
 
-        // --- 4. 選擇題 (MC) ---
-        function renderMC(container, mcData) {
-            if(!mcData || mcData.length===0) return container.innerHTML = "<p>無資料</p>";
-            let html = `<div class="space-y-8">`;
-            mcData.forEach((q, i) => {
-                html += `
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                        <div class="text-xs font-bold text-indigo-500 mb-2">Q${i+1}.</div>
-                        <h3 class="text-xl font-bold korean-font mb-2 text-slate-800">${q.question.replace('___', '_____')}</h3>
-                        <p class="text-slate-500 text-sm mb-6"><i class="fas fa-language"></i> ${q.translation}</p>
-                        
-                        <div class="grid grid-cols-2 gap-3" id="mc-options-${i}">
-                            ${q.options.map(opt => `
-                                <button onclick="handleMCClick(this, '${opt}', '${q.answer}', ${i})" class="bg-white border-2 border-slate-200 p-4 rounded-xl font-bold korean-font text-lg hover:border-indigo-400 hover:bg-indigo-50 transition active:scale-95 text-slate-700">
-                                    ${opt}
-                                </button>
-                            `).join('')}
-                        </div>
-                        <div id="mc-feedback-${i}" class="mt-4 font-bold text-sm h-5 hidden"></div>
-                    </div>
-                `;
-            });
-            html += `</div>`;
-            container.innerHTML = html;
-        }
-
-        window.handleMCClick = function(btn, selected, correct, qIndex) {
-            const parent = document.getElementById(`mc-options-${qIndex}`);
-            const feedback = document.getElementById(`mc-feedback-${qIndex}`);
-            
-            parent.querySelectorAll('button').forEach(b => b.disabled = true);
-            feedback.classList.remove('hidden');
-
-            if(selected === correct) {
-                btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600', 'pop');
-                btn.classList.remove('bg-white', 'text-slate-700');
-                feedback.innerHTML = `<span class="text-emerald-600"><i class="fas fa-check"></i> 答對了！</span>`;
-            } else {
-                btn.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-600', 'shake');
-                feedback.innerHTML = `<span class="text-rose-500"><i class="fas fa-times"></i> 答錯了，正解為: ${correct}</span>`;
-            }
-        }
-
         // --- 5. 填空輸入題 (Typing) ---
         function renderTyping(container, typingData) {
-            if(!typingData || typingData.length===0) return container.innerHTML = "<p>無資料</p>";
+            if(!typingData || typingData.length===0) return container.innerHTML = "<p class='text-center text-slate-400 mt-10'>內容建置中...</p>";
             let qIndex = typingState.currentQ;
             
             if(qIndex >= typingData.length) {
                 return container.innerHTML = `
                     <div class="text-center py-20 pop">
-                        <i class="fas fa-keyboard text-6xl text-emerald-500 mb-4"></i>
-                        <h2 class="text-3xl font-black">完成所有輸入測驗！</h2>
-                        <button onclick="resetStates(); renderContent();" class="mt-6 bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700">再測一次</button>
+                        <i class="fas fa-keyboard text-6xl text-indigo-500 mb-4"></i>
+                        <h2 class="text-3xl font-black text-slate-800">輸入測驗完成！</h2>
+                        <p class="text-slate-500 mt-2">太棒了，您的拼寫記憶越來越穩固了。</p>
+                        <button onclick="resetStates(); renderContent();" class="mt-8 bg-indigo-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-indigo-700 shadow-md">再測一次</button>
                     </div>`;
             }
 
             let q = typingData[qIndex];
-            
-            // 將題目切開，放入 input 框
             let parts = q.question.split('___');
 
             container.innerHTML = `
-                <div class="max-w-xl mx-auto py-10">
-                    <div class="text-center mb-8">
-                        <span class="text-xs font-black text-indigo-500 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full">Question ${qIndex+1} / ${typingData.length}</span>
-                        <p class="text-slate-500 mt-4"><i class="fas fa-language"></i> ${q.translation}</p>
-                        ${q.hint ? `<p class="text-amber-500 text-xs mt-2"><i class="fas fa-lightbulb"></i> 提示: ${q.hint}</p>` : ''}
+                <div class="max-w-xl mx-auto py-8 animate-fade-in flex flex-col items-center">
+                    <div class="text-center mb-10 w-full">
+                        <span class="text-xs font-black text-indigo-500 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full mb-4 inline-block">Question ${qIndex+1} / ${typingData.length}</span>
+                        <p class="text-slate-500 mt-2 font-medium"><i class="fas fa-language text-slate-400"></i> ${q.translation}</p>
+                        ${q.hint ? `<p class="text-amber-600 text-sm mt-3 bg-amber-50 inline-block px-4 py-2 rounded-xl font-bold border border-amber-100"><i class="fas fa-lightbulb text-amber-400"></i> 提示: ${q.hint}</p>` : ''}
                     </div>
                     
-                    <div class="text-2xl md:text-3xl font-black korean-font text-center text-slate-800 leading-relaxed mb-8 flex flex-wrap items-center justify-center gap-2">
+                    <div class="text-3xl md:text-4xl font-black korean-font text-center text-slate-800 leading-loose mb-10 flex flex-wrap items-center justify-center gap-3">
                         <span>${parts[0]}</span>
-                        <input type="text" id="type-input" autocomplete="off" class="w-24 border-b-4 border-slate-300 bg-slate-50 text-indigo-600 text-center focus:outline-none focus:border-indigo-500 focus:bg-white transition-colors px-2 py-1 rounded-t-lg">
+                        <input type="text" id="type-input" autocomplete="off" autocorrect="off" spellcheck="false" class="w-32 border-b-4 border-slate-300 bg-slate-50 text-indigo-600 text-center focus:outline-none focus:border-indigo-500 focus:bg-indigo-50 transition-colors px-2 py-2 rounded-t-xl shadow-inner">
                         <span>${parts[1] || ''}</span>
                     </div>
 
-                    <div id="type-feedback" class="text-center h-8 font-bold mb-6"></div>
+                    <div id="type-feedback" class="text-center h-10 font-bold mb-6 w-full flex items-center justify-center"></div>
 
-                    <button onclick="checkTyping('${q.answer}')" id="btn-type-submit" class="w-full bg-slate-800 text-white font-bold py-4 rounded-2xl hover:bg-black active:scale-95 transition shadow-lg tracking-widest">
+                    <button onclick="checkTyping('${q.answer}')" id="btn-type-submit" class="w-full bg-slate-800 text-white font-black py-4 rounded-2xl hover:bg-black active:scale-95 transition-all shadow-lg tracking-widest uppercase">
                         提交答案 (Enter)
                     </button>
                 </div>
@@ -566,13 +765,18 @@
             const feedback = document.getElementById('type-feedback');
             const val = input.value.trim();
 
-            if(!val) return;
+            if(!val) {
+                input.classList.add('border-amber-300', 'animate-shake');
+                setTimeout(()=> input.classList.remove('animate-shake'), 400);
+                return;
+            }
 
             if(val === correctAnswer) {
                 input.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-700');
                 input.classList.remove('border-slate-300');
-                feedback.innerHTML = `<span class="text-emerald-500 pop inline-block"><i class="fas fa-check-circle"></i> 正確無誤！</span>`;
+                feedback.innerHTML = `<span class="text-emerald-600 pop inline-block text-lg"><i class="fas fa-check-circle"></i> 正確無誤！</span>`;
                 input.disabled = true;
+                document.getElementById('btn-type-submit').disabled = true;
                 
                 setTimeout(() => {
                     typingState.currentQ++;
@@ -580,9 +784,10 @@
                 }, 1000);
             } else {
                 input.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-600', 'shake');
-                feedback.innerHTML = `<span class="text-rose-500"><i class="fas fa-times-circle"></i> 拼字錯誤，請再試一次。</span>`;
+                feedback.innerHTML = `<span class="text-rose-500 text-lg"><i class="fas fa-times-circle"></i> 拼錯了，請檢查您的輸入。</span>`;
                 setTimeout(() => {
                     input.classList.remove('shake');
+                    input.select();
                 }, 400);
             }
         }
@@ -592,7 +797,8 @@
             const t = document.getElementById('toast');
             t.innerText = msg;
             t.style.opacity = '1';
-            setTimeout(() => { t.style.opacity = '0'; }, 2000);
+            if(window.toastTimer) clearTimeout(window.toastTimer);
+            window.toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 2000);
         }
     </script>
 </body>
